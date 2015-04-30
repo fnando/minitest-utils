@@ -55,7 +55,7 @@ module Minitest
       end
 
       def indent(text)
-        text.gsub(/^/, '    ')
+        text.gsub(/^/, '      ')
       end
 
       def display_failing(result, index)
@@ -64,7 +64,7 @@ module Minitest
         message = message.lines.tap(&:pop).join.chomp if result.error?
 
         str = "\n\n"
-        str << color("#{index}) #{result_name(result.name)}")
+        str << color("%4d) %s" % [index, result_name(result.name)])
         str << "\n" << color(indent(message), :red)
         str << "\n" << color(backtrace, :blue)
         io.print str
@@ -73,7 +73,7 @@ module Minitest
       def display_skipped(result, index)
         location = location(result.failure.location)
         str = "\n\n"
-        str << color("#{index}) #{result_name(result.name)} [SKIPPED]", :yellow)
+        str << color("%4d) %s [SKIPPED]" % [index, result_name(result.name)], :yellow)
         str << "\n" << indent(color(location, :yellow))
         io.print str
       end
