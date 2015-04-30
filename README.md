@@ -1,8 +1,13 @@
 # Minitest::Utils
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/minitest/utils`. To experiment with that code, run `bin/console` for an interactive prompt.
+Some utilities for your Minitest day-to-day usage.
 
-TODO: Delete this and the text above, and describe your gem
+Includes:
+
+- A better reporter (see screenshot below)
+- A [TestNotifier](http://github.com/fnando/test_notifier) reporter
+- Some Rails niceties (set up FactoryGirl, WebMock and Capybara)
+- Add a `t` and `l` methods (i18n)
 
 ## Installation
 
@@ -20,9 +25,13 @@ Or install it yourself as:
 
     $ gem install minitest-utils
 
-## Usage
+## Screenshots
 
-TODO: Write usage instructions here
+![](https://raw.githubusercontent.com/fnando/minitest-utils/master/screenshots/light-failing.png)
+![](https://raw.githubusercontent.com/fnando/minitest-utils/master/screenshots/light-success.png)
+![](https://raw.githubusercontent.com/fnando/minitest-utils/master/screenshots/dark-failing.png)
+![](https://raw.githubusercontent.com/fnando/minitest-utils/master/screenshots/dark-success.png)
+
 
 ## Development
 

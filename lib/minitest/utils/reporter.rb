@@ -21,16 +21,20 @@ module Minitest
         color = :yellow if skipped_results.any?
         color = :red if failing_results.any?
 
-        io.puts "\n"
+        if failing_results.any? || skipped_results.any?
+          failing_results.each.with_index(1) {|result, index| display_failing(result, index) }
+          skipped_results.each.with_index(failing_results.size + 1) {|result, index| display_skipped(result, index) }
+        end
 
-        failing_results.each.with_index(1) {|result, index| display_failing(result, index) }
-        skipped_results.each.with_index(failing_results.size + 1) {|result, index| display_skipped(result, index) }
         io.print "\n\n"
         io.puts statistics
         io.puts color(summary, color)
-        io.puts "\nFailed Tests:\n"
-        failing_results.each {|result| display_replay_command(result) }
-        io.puts "\n\n"
+
+        if failing_results.any?
+          io.puts "\nFailed Tests:\n"
+          failing_results.each {|result| display_replay_command(result) }
+          io.puts "\n\n"
+        end
       end
 
       private
@@ -75,9 +79,8 @@ module Minitest
       end
 
       def display_replay_command(result)
-        location = location(result.failure.location).gsub(/:\d+$/, '')
+        location = filter_backtrace(result.failure.backtrace).first.gsub(/:\d+.*?$/, '')
         command = %[rake TEST=#{location} TESTOPTS="--name=#{result.name}"]
-
         str = "\n"
         str << color(command, :red)
 
@@ -86,6 +89,7 @@ module Minitest
 
       def backtrace(backtrace)
         backtrace = filter_backtrace(backtrace).map {|line| location(line) }
+        return if backtrace.empty?
         indent(backtrace.join("\n")).gsub(/^(\s+)/, "\\1# ")
       end
 
