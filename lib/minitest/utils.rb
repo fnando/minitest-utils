@@ -3,6 +3,7 @@ module Minitest
     require 'minitest'
     require 'minitest/utils/version'
     require 'minitest/utils/reporter'
+    require 'minitest/utils/extension'
     require 'minitest/utils/test_notifier_reporter'
   end
 end
