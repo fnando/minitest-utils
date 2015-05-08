@@ -1,8 +1,22 @@
 module Minitest
   module Utils
     class Reporter < Minitest::StatisticsReporter
+      COLOR_FOR_RESULT_CODE = {
+        '.' => :green,
+        'E' => :red,
+        'F' => :red,
+        'S' => :yellow
+      }
+
+      COLOR = {
+        red: 31,
+        green: 32,
+        yellow: 33,
+        blue: 34
+      }
+
       def statistics
-        stats = super
+        super
       end
 
       def record(result)
@@ -118,35 +132,13 @@ module Minitest
       end
 
       def print_result_code(result_code)
-        result_code = case result_code
-                      when '.'
-                        color('.', :green)
-                      when 'S'
-                        color('S', :yellow)
-                      when 'F'
-                        color('F', :red)
-                      when 'E'
-                        color('E', :red)
-                      else
-                        color(result_code)
-                      end
-
+        result_code = color(result_code, COLOR_FOR_RESULT_CODE[result_code])
         io.print result_code
       end
 
       def color(string, color = :default)
-        case color
-        when :red
-          "\e[31m#{string}\e[0m"
-        when :green
-          "\e[32m#{string}\e[0m"
-        when :yellow
-          "\e[33m#{string}\e[0m"
-        when :blue
-          "\e[34m#{string}\e[0m"
-        else
-          "\e[0m#{string}"
-        end
+        color = COLOR.fetch(color, 0)
+        "\e[#{color}m#{string}"
       end
 
       def pluralize(word, count)
