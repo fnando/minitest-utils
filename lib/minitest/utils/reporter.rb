@@ -113,7 +113,7 @@ module Minitest
 
       def result_name(name)
         name
-          .gsub(/^test_\d+_/, '')
+          .gsub(/^test(_\d+)?_/, '')
           .gsub(/_/, ' ')
       end
 
