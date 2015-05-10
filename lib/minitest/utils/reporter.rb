@@ -103,7 +103,7 @@ module Minitest
 
       def find_test_file(result)
         filter_backtrace(result.failure.backtrace)
-          .find {|line| line.match(%r(^(test|spec)/.*?_(test|spec).rb)) }
+          .find {|line| line.match(%r((test|spec)/.*?_(test|spec).rb)) }
           .gsub(/:\d+.*?$/, '')
       end
 
