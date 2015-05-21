@@ -94,6 +94,8 @@ module Minitest
 
       def display_replay_command(result)
         location = find_test_file(result)
+        return if location.empty?
+
         command = %[rake TEST=#{location} TESTOPTS="--name=#{result.name}"]
         str = "\n"
         str << color(command, :red)
@@ -104,17 +106,19 @@ module Minitest
       def find_test_file(result)
         filter_backtrace(result.failure.backtrace)
           .find {|line| line.match(%r((test|spec)/.*?_(test|spec).rb)) }
+          .to_s
           .gsub(/:\d+.*?$/, '')
       end
 
       def backtrace(backtrace)
-        backtrace = filter_backtrace(backtrace).map {|line| location(line) }
+        backtrace = filter_backtrace(backtrace).map {|line| location(line, true) }
         return if backtrace.empty?
         indent(backtrace.join("\n")).gsub(/^(\s+)/, "\\1# ")
       end
 
-      def location(location)
-        location = File.expand_path(location[/^([^:]+)/, 1])
+      def location(location, include_line_number = false)
+        regex = include_line_number ? /^([^:]+:\d+)/ : /^([^:]+)/
+        location = File.expand_path(location[regex, 1])
 
         return location unless location.start_with?(Dir.pwd)
 
