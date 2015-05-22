@@ -14,6 +14,8 @@ module Minitest
         yellow: 33,
         blue: 34
       }
+      
+      RESET = "\e[0m"
 
       def statistics
         super
@@ -142,7 +144,7 @@ module Minitest
 
       def color(string, color = :default)
         color = COLOR.fetch(color, 0)
-        "\e[#{color}m#{string}\e[0m"
+        "\e[#{color}m#{string}#{RESET}"
       end
 
       def pluralize(word, count)
