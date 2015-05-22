@@ -142,7 +142,7 @@ module Minitest
 
       def color(string, color = :default)
         color = COLOR.fetch(color, 0)
-        "\e[#{color}m#{string}"
+        "\e[#{color}m#{string}\e[0m"
       end
 
       def pluralize(word, count)
