@@ -14,5 +14,29 @@ module Minitest
         end
       end
     end
+
+    def self.setup(&block)
+      mod = Module.new
+      mod.module_eval do
+        define_method :setup do
+          super()
+          instance_eval(&block)
+        end
+      end
+
+      include mod
+    end
+
+    def self.teardown(&block)
+      mod = Module.new
+      mod.module_eval do
+        define_method :teardown do
+          super()
+          instance_eval(&block)
+        end
+      end
+
+      include mod
+    end
   end
 end

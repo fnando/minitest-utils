@@ -39,6 +39,24 @@ end
 
 This is equivalent to defining a method named `test_useless_test`. You can also skip the block, which will define a [flunk](https://github.com/seattlerb/minitest/blob/77120c5b2511c4665610cda06c8058c801b28e7f/lib/minitest/assertions.rb#L477-L480) call.
 
+You can also define `setup` and `teardown` steps.
+
+```ruby
+class SampleTest < Minitest::Test
+  setup do
+    DB.connect
+  end
+
+  teardown do
+    DB.disconnect
+  end
+
+  test 'useless test' do
+    assert true
+  end
+end
+```
+
 ## Screenshots
 
 ![](https://raw.githubusercontent.com/fnando/minitest-utils/master/screenshots/light-failing.png)
