@@ -15,6 +15,11 @@ module Minitest
         blue: 34
       }
 
+      def initialize(*)
+        super
+        @color_enabled = io.respond_to?(:tty?) && io.tty?
+      end
+
       def statistics
         super
       end
@@ -141,8 +146,16 @@ module Minitest
       end
 
       def color(string, color = :default)
-        color = COLOR.fetch(color, 0)
-        "\e[#{color}m#{string}\e[0m"
+        if color_enabled?
+          color = COLOR.fetch(color, 0)
+          "\e[#{color}m#{string}\e[0m"
+        else
+          string
+        end
+      end
+
+      def color_enabled?
+        @color_enabled
       end
 
       def pluralize(word, count)
