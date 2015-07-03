@@ -20,10 +20,6 @@ module Minitest
         @color_enabled = io.respond_to?(:tty?) && io.tty?
       end
 
-      def statistics
-        super
-      end
-
       def record(result)
         super
         print_result_code(result.result_code)
