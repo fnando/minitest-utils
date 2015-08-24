@@ -25,6 +25,14 @@ module Minitest
         print_result_code(result.result_code)
       end
 
+      def start
+        super
+        io.puts "Run options: #{options[:args]}"
+        io.puts
+        io.puts "# Running:"
+        io.puts
+      end
+
       def report
         super
         io.sync = true
