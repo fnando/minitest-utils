@@ -1,8 +1,24 @@
 require 'test_helper'
 
 class MinitestUtilsTest < Minitest::Test
+  def capture_exception
+    yield
+  rescue Exception => exception
+    exception
+  end
+
   test 'defines method name' do
     assert MinitestUtilsTest.instance_methods.include?(:test_defines_method_name)
+  end
+
+  test 'improves assert message' do
+    exception = capture_exception { assert nil }
+    assert_equal "expected: truthy value\ngot: nil", exception.message
+  end
+
+  test 'improves refute message' do
+    exception = capture_exception { refute 1234 }
+    assert_equal "expected: falsy value\ngot: 1234", exception.message
   end
 
   test 'raises exception for duplicated method name' do

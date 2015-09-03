@@ -1,5 +1,21 @@
 module Minitest
+  module Utils
+    module Assertions
+      def assert(test, message = nil)
+        message ||= "expected: truthy value\ngot: #{mu_pp(test)}"
+        super(test, message)
+      end
+
+      def refute(test, message = nil)
+        message ||= "expected: falsy value\ngot: #{mu_pp(test)}"
+        super(test, message)
+      end
+    end
+  end
+
   class Test
+    include ::Minitest::Utils::Assertions
+
     def self.test(name, &block)
       test_name = "test_#{name.gsub(/\s+/,'_')}".to_sym
       defined = method_defined? test_name
