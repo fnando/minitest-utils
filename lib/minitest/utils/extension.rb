@@ -54,5 +54,18 @@ module Minitest
 
       include mod
     end
+
+    def self.let(name, &block)
+      target = instance_method(name) rescue nil
+      message = "Cannot define let(:#{name});"
+
+      raise ArgumentError, "#{message} method cannot begin with 'test'." if name.to_s.start_with?('test')
+      raise ArgumentError, "#{message} method already defined by #{target.owner}." if target
+
+      define_method(name) do
+        @_memoized ||= {}
+        @_memoized.fetch(name) {|k| @_memoized[k] = instance_eval(&block) }
+      end
+    end
   end
 end

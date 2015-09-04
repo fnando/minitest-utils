@@ -57,6 +57,18 @@ class SampleTest < Minitest::Test
 end
 ```
 
+Finally, you can also use `let`.
+
+```ruby
+class SampleTest < Minitest::Test
+  let(:token) { 'secret' }
+
+  test 'set token' do
+    assert_equal 'secret', token
+  end
+end
+```
+
 ## Screenshots
 
 ![](https://raw.githubusercontent.com/fnando/minitest-utils/master/screenshots/light-failing.png)
