@@ -1,4 +1,4 @@
-require 'minitest/utils'
+require "minitest/utils"
 
 module Minitest
   def self.plugin_utils_init(options)

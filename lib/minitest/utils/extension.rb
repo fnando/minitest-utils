@@ -59,7 +59,7 @@ module Minitest
       target = instance_method(name) rescue nil
       message = "Cannot define let(:#{name});"
 
-      raise ArgumentError, "#{message} method cannot begin with 'test'." if name.to_s.start_with?('test')
+      raise ArgumentError, "#{message} method cannot begin with 'test'." if name.to_s.start_with?("test")
       raise ArgumentError, "#{message} method already defined by #{target.owner}." if target
 
       define_method(name) do

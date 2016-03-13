@@ -2,10 +2,10 @@ module Minitest
   module Utils
     class Reporter < Minitest::StatisticsReporter
       COLOR_FOR_RESULT_CODE = {
-        '.' => :green,
-        'E' => :red,
-        'F' => :red,
-        'S' => :yellow
+        "." => :green,
+        "E" => :red,
+        "F" => :red,
+        "S" => :yellow
       }
 
       COLOR = {
@@ -69,16 +69,16 @@ module Minitest
 
       def summary # :nodoc:
         [
-          pluralize('run', count),
-          pluralize('assertion', assertions),
-          pluralize('failure', failures),
-          pluralize('error', errors),
-          pluralize('skip', skips),
-        ].join(', ')
+          pluralize("run", count),
+          pluralize("assertion", assertions),
+          pluralize("failure", failures),
+          pluralize("error", errors),
+          pluralize("skip", skips)
+        ].join(", ")
       end
 
       def indent(text)
-        text.gsub(/^/, '      ')
+        text.gsub(/^/, "      ")
       end
 
       def display_failing(result, index)
@@ -116,7 +116,7 @@ module Minitest
         filter_backtrace(result.failure.backtrace)
           .find {|line| line.match(%r((test|spec)/.*?_(test|spec).rb)) }
           .to_s
-          .gsub(/:\d+.*?$/, '')
+          .gsub(/:\d+.*?$/, "")
       end
 
       def backtrace(backtrace)
@@ -131,7 +131,7 @@ module Minitest
 
         return location unless location.start_with?(Dir.pwd)
 
-        location.gsub(%r[^#{Regexp.escape(Dir.pwd)}/], '')
+        location.gsub(%r[^#{Regexp.escape(Dir.pwd)}/], "")
       end
 
       def filter_backtrace(backtrace)
@@ -140,8 +140,8 @@ module Minitest
 
       def result_name(name)
         name
-          .gsub(/^test(_\d+)?_/, '')
-          .gsub(/_/, ' ')
+          .gsub(/^test(_\d+)?_/, "")
+          .gsub(/_/, " ")
       end
 
       def print_result_code(result_code)
