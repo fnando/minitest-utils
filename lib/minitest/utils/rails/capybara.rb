@@ -1,5 +1,11 @@
 require "capybara/rails"
 
+begin
+  require "capybara/poltergeist"
+  Capybara.javascript_driver = :poltergeist
+rescue LoadError
+end
+
 module ActionDispatch
   class IntegrationTest
     include Capybara::DSL
