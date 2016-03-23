@@ -80,7 +80,7 @@ end
 
 minitest-utils sets up some things for your Rails application. Just load `minitest/utils/rails` to set up:
 
-- [Capybara](https://github.com/jnicklas/capybara): includes `Capybara::DSL`, sets default driver before every test, resets session and creates a helper method for setting JavaScript driver.
+- [Capybara](https://github.com/jnicklas/capybara): includes `Capybara::DSL`, sets default driver before every test, resets session and creates a helper method for setting JavaScript driver. If you have [poltergeist](https://github.com/teampoltergeist/poltergeist) installed, it will be used as the default JavaScript driver.
 - [FactoryGirl](https://github.com/thoughtbot/factory_girl): adds methods to `ActiveSupport::TestCase`.
 - [WebMock](https://github.com/bblimke/webmock): disables external requests (except for codeclimate) and tracks all requests on `WebMock.requests`.
 - locale routes: sets `Rails.application.routes.default_url_options[:locale]` with your current locale.
