@@ -10,8 +10,8 @@ WebMock.after_request do |request, _response|
   WebMock.requests << request
 end
 
-module ActiveSupport
-  class TestCase
+module Minitest
+  class Test
     setup do
       WebMock.requests.clear
     end

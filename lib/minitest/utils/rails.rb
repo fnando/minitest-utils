@@ -19,10 +19,7 @@ module ActiveSupport
   class TestCase
     extend Minitest::Spec::DSL if defined?(Minitest::Spec::DSL)
 
-    require "minitest/utils/rails/webmock" if defined?(WebMock)
     require "minitest/utils/rails/capybara" if defined?(Capybara)
-    require "minitest/utils/rails/factory_girl" if defined?(FactoryGirl)
-    require "minitest/utils/rails/database_cleaner" if defined?(DatabaseCleaner)
 
     def t(*args)
       I18n.t(*args)
