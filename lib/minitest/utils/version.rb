@@ -1,5 +1,5 @@
 module Minitest
   module Utils
-    VERSION = "0.2.9".freeze
+    VERSION = "0.3.0".freeze
   end
 end
