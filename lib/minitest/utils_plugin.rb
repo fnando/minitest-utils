@@ -1,4 +1,5 @@
-require "minitest/utils"
+require "minitest/utils/reporter"
+require "minitest/utils/test_notifier_reporter"
 
 module Minitest
   def self.plugin_utils_init(options)
