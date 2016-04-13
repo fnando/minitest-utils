@@ -84,7 +84,7 @@ minitest-utils sets up some things for your Rails application.
 - [FactoryGirl](https://github.com/thoughtbot/factory_girl): adds methods to `ActiveSupport::TestCase`.
 - [WebMock](https://github.com/bblimke/webmock): disables external requests (except for codeclimate) and tracks all requests on `WebMock.requests`.
 - locale routes: sets `Rails.application.routes.default_url_options[:locale]` with your current locale.
-- [DatabaseCleaner](https://github.com/DatabaseCleaner/database_cleaner): runs `DatabaseCleaner.start` and `DatabaseCleaner.clean` before and after every test respectively.
+- [DatabaseCleaner](https://github.com/DatabaseCleaner/database_cleaner): configure database before running each test. You can configure the strategy by settings `DatabaseCleaner.strategy = :truncation`, for instance. It defaults to `:deletion`.
 - Other: `t` and `l` alias to I18n.
 
 ```ruby
