@@ -1,4 +1,4 @@
-DatabaseCleaner[:active_record].strategy = :deletion
+DatabaseCleaner[:active_record].strategy = :truncation
 
 module Minitest
   class Test
