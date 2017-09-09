@@ -118,11 +118,10 @@ module Minitest
       end
 
       def find_test_file(result)
-        filter_backtrace(result.failure.backtrace)
-          .find {|line| line.match(%r((test|spec)/.*?_(test|spec).rb)) }
-          .to_s
-          .gsub(/:(\d+).*?$/, ":\\1")
-          .split(":")
+        location, line = result.method(result.name).source_location
+        location = location.gsub(%r[^.*?/((?:test|spec)/.*?)$], "\\1")
+
+        [location, line]
       end
 
       def backtrace(backtrace)
