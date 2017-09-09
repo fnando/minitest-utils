@@ -11,15 +11,12 @@ module Minitest
         require path
         block.call if block
       rescue LoadError
+        return
       end
     end
 
     load_lib.call "mocha/mini_test"
     load_lib.call "capybara"
-
-    load_lib.call("capybara/poltergeist") do
-      require "minitest/utils/setup/poltergeist"
-    end
 
     load_lib.call "webmock" do
       require "minitest/utils/setup/webmock"
