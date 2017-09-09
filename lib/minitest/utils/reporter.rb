@@ -102,10 +102,15 @@ module Minitest
       end
 
       def display_replay_command(result)
-        location = find_test_file(result)
+        location, line = find_test_file(result)
         return if location.empty?
 
-        command = %[rake TEST=#{location} TESTOPTS="--name=#{result.name}"]
+        command = if defined?(Rails) && Rails.version >= "5.0.0"
+                    %[bin/rails test #{location}:#{line}]
+                  else
+                    %[rake TEST=#{location} TESTOPTS="--name=#{result.name}"]
+                  end
+
         str = "\n"
         str << color(command, :red)
 
@@ -116,7 +121,8 @@ module Minitest
         filter_backtrace(result.failure.backtrace)
           .find {|line| line.match(%r((test|spec)/.*?_(test|spec).rb)) }
           .to_s
-          .gsub(/:\d+.*?$/, "")
+          .gsub(/:(\d+).*?$/, ":\\1")
+          .split(":")
       end
 
       def backtrace(backtrace)
