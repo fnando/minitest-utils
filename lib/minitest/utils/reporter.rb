@@ -131,7 +131,9 @@ module Minitest
       end
 
       def location(location, include_line_number = false)
-        regex = include_line_number ? /^([^:]+:\d+)/ : /^([^:]+)/
+        # fails on windows "c:/Dominic/programming/ruby/acrobat/lib/acrobat/app.rb:169:in `const_load'"
+        #regex = include_line_number ? /^([^:]+:\d+)/ : /^([^:]+)/
+        regex =  include_line_number ?  regex = /(.+:(\d+))/  :  regex = /(.+)(?=(:\d+))/
         location = File.expand_path(location[regex, 1])
 
         return location unless location.start_with?(Dir.pwd)
