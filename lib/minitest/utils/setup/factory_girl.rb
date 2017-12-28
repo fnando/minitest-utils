@@ -1,5 +1,5 @@
 module Minitest
   class Test
-    include FactoryGirl::Syntax::Methods
+    include FactoryBot::Syntax::Methods
   end
 end

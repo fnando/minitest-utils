@@ -6,7 +6,7 @@ Includes:
 
 - A better reporter (see screenshot below)
 - A [TestNotifier](http://github.com/fnando/test_notifier) reporter
-- Some Rails niceties (set up FactoryGirl, WebMock and Capybara)
+- Some Rails niceties (set up FactoryBot, WebMock and Capybara)
 - Add a `t` and `l` methods (i18n)
 
 ## Installation
@@ -81,7 +81,7 @@ end
 minitest-utils sets up some things for your Rails application.
 
 - [Capybara](https://github.com/jnicklas/capybara): includes `Capybara::DSL`, sets default driver before every test, resets session and creates a helper method for setting JavaScript driver. If you have [poltergeist](https://github.com/teampoltergeist/poltergeist) installed, it will be used as the default JavaScript driver.
-- [FactoryGirl](https://github.com/thoughtbot/factory_girl): adds methods to `ActiveSupport::TestCase`.
+- [FactoryBot](https://github.com/thoughtbot/factory_bot): adds methods to `ActiveSupport::TestCase`.
 - [WebMock](https://github.com/bblimke/webmock): disables external requests (except for codeclimate) and tracks all requests on `WebMock.requests`.
 - locale routes: sets `Rails.application.routes.default_url_options[:locale]` with your current locale.
 - [DatabaseCleaner](https://github.com/DatabaseCleaner/database_cleaner): configure database before running each test. You can configure the strategy by settings `DatabaseCleaner.strategy = :truncation`, for instance. It defaults to `:deletion`.

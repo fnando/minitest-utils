@@ -26,8 +26,8 @@ module Minitest
       require "minitest/utils/setup/database_cleaner"
     end
 
-    load_lib.call "factory_girl" do
-      require "minitest/utils/setup/factory_girl"
+    load_lib.call "factory_bot" do
+      require "minitest/utils/setup/factory_bot"
     end
 
     require "minitest/utils/railtie" if defined?(Rails)
