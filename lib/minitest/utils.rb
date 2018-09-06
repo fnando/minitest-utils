@@ -15,7 +15,7 @@ module Minitest
       end
     end
 
-    load_lib.call "mocha/mini_test"
+    load_lib.call "mocha/minitest"
     load_lib.call "capybara"
 
     load_lib.call "webmock" do
