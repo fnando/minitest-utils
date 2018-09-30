@@ -1,6 +1,6 @@
 require "webmock/minitest"
 
-WebMock.disable_net_connect!(allow: %w[codeclimate.com])
+WebMock.disable_net_connect!
 
 def WebMock.requests
   @requests ||= []

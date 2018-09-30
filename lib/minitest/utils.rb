@@ -10,12 +10,16 @@ module Minitest
       begin
         require path
         block.call if block
+        true
       rescue LoadError
-        return
+        false
       end
     end
 
-    load_lib.call "mocha/mini_test"
+    unless load_lib.call "mocha/minitest"
+      load_lib.call "mocha/mini_test"
+    end
+
     load_lib.call "capybara"
 
     load_lib.call "webmock" do
