@@ -118,7 +118,12 @@ module Minitest
       end
 
       def find_test_file(result)
-        location, line = result.method(result.name).source_location
+        location, line = if result.respond_to?(:source_location)
+                           result.source_location
+                         else
+                           result.method(result.name).source_location
+                         end
+
         location = location.gsub(%r[^.*?/((?:test|spec)/.*?)$], "\\1")
 
         [location, line]
