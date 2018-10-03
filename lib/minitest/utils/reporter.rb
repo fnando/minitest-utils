@@ -108,7 +108,8 @@ module Minitest
         command = if defined?(Rails) && Rails.version >= "5.0.0"
                     %[bin/rails test #{location}:#{line}]
                   else
-                    %[rake TEST=#{location} TESTOPTS="--name=#{result.name}"]
+                    bundle = "bundle exec " if defined?(Bundler)
+                    %[#{bundle}rake TEST=#{location} TESTOPTS="--name=#{result.name}"]
                   end
 
         str = "\n"
