@@ -34,6 +34,10 @@ module Minitest
       require "minitest/utils/setup/factory_girl"
     end
 
+    load_lib.call "factory_bot" do
+      require "minitest/utils/setup/factory_bot"
+    end
+
     require "minitest/utils/railtie" if defined?(Rails)
   end
 end
