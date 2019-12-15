@@ -198,6 +198,7 @@ module Minitest
 
       private def running_rails?
         defined?(Rails) &&
+        Rails.respond_to?(:version) &&
         Rails.version >= "5.0.0"
       end
 
