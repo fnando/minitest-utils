@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class MinitestUtilsTest < Minitest::Test
   def capture_exception
     yield
-  rescue Exception => exception
-    exception
+  rescue Exception => e # rubocop:disable Lint/RescueException
+    e
   end
 
   test "defines method name" do
@@ -22,12 +24,12 @@ class MinitestUtilsTest < Minitest::Test
   end
 
   test "raises exception for duplicated method name" do
-    assert_raises(RuntimeError) {
+    assert_raises(RuntimeError) do
       Class.new(Minitest::Test) do
         test "some test"
         test "some test"
       end
-    }
+    end
   end
 
   test "flunks method without block" do
@@ -35,9 +37,9 @@ class MinitestUtilsTest < Minitest::Test
       test "flunk test"
     end
 
-    assert_raises(Minitest::Assertion) {
+    assert_raises(Minitest::Assertion) do
       test_case.new("test").test_flunk_test
-    }
+    end
   end
 
   test "defines setup steps" do
@@ -48,7 +50,7 @@ class MinitestUtilsTest < Minitest::Test
       setup { setups << 2 }
       setup { setups << 3 }
 
-      test("do something") {}
+      test("do something") { }
     end
 
     test_case.new(Minitest::AbstractReporter).run
@@ -64,7 +66,7 @@ class MinitestUtilsTest < Minitest::Test
       teardown { teardowns << 2 }
       teardown { teardowns << 3 }
 
-      test("do something") {}
+      test("do something") { }
     end
 
     test_case.new(Minitest::AbstractReporter).run

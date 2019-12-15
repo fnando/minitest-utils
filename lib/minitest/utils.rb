@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Minitest
   module Utils
     require "minitest"
@@ -7,18 +9,14 @@ module Minitest
     require "minitest/utils/test_notifier_reporter"
 
     load_lib = lambda do |path, &block|
-      begin
-        require path
-        block.call if block
-        true
-      rescue LoadError
-        false
-      end
+      require path
+      block&.call
+      true
+    rescue LoadError
+      false
     end
 
-    unless load_lib.call "mocha/minitest"
-      load_lib.call "mocha/mini_test"
-    end
+    load_lib.call "mocha/mini_test" unless load_lib.call "mocha/minitest"
 
     load_lib.call "capybara"
 

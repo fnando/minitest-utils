@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Minitest
   module Utils
     module Assertions
@@ -17,7 +19,7 @@ module Minitest
     include ::Minitest::Utils::Assertions
 
     def self.test(name, &block)
-      test_name = "test_#{name.gsub(/\s+/,'_')}".to_sym
+      test_name = "test_#{name.gsub(/\s+/, '_')}".to_sym
       defined = method_defined? test_name
 
       raise "#{test_name} is already defined in #{self}" if defined
@@ -55,12 +57,23 @@ module Minitest
       include mod
     end
 
-    def self.let(name, &block)
-      target = instance_method(name) rescue nil
+    def self.let(name, &block) # rubocop:disable Metrics/MethodLength
+      target = begin
+                 instance_method(name)
+               rescue StandardError
+                 nil
+               end
+
       message = "Cannot define let(:#{name});"
 
-      raise ArgumentError, "#{message} method cannot begin with 'test'." if name.to_s.start_with?("test")
-      raise ArgumentError, "#{message} method already defined by #{target.owner}." if target
+      if name.to_s.start_with?("test")
+        raise ArgumentError, "#{message} method cannot begin with 'test'."
+      end
+
+      if target
+        raise ArgumentError,
+              "#{message} method already defined by #{target.owner}."
+      end
 
       define_method(name) do
         @_memoized ||= {}

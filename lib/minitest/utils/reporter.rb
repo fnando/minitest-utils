@@ -1,19 +1,21 @@
+# frozen_string_literal: true
+
 module Minitest
   module Utils
-    class Reporter < Minitest::StatisticsReporter
+    class Reporter < Minitest::StatisticsReporter # rubocop:disable Metrics/ClassLength
       COLOR_FOR_RESULT_CODE = {
         "." => :green,
         "E" => :red,
         "F" => :red,
         "S" => :yellow
-      }
+      }.freeze
 
       COLOR = {
         red: 31,
         green: 32,
         yellow: 33,
         blue: 34
-      }
+      }.freeze
 
       def initialize(*)
         super
@@ -33,7 +35,7 @@ module Minitest
         io.puts
       end
 
-      def report
+      def report # rubocop:disable Metrics/MethodLength
         super
         io.sync = true
 
@@ -45,29 +47,38 @@ module Minitest
         color = :red if failing_results.any?
 
         if failing_results.any? || skipped_results.any?
-          failing_results.each.with_index(1) {|result, index| display_failing(result, index) }
-          skipped_results.each.with_index(failing_results.size + 1) {|result, index| display_skipped(result, index) }
+          failing_results.each.with_index(1) do |result, index|
+            display_failing(result, index)
+          end
+
+          skipped_results
+            .each
+            .with_index(failing_results.size + 1) do |result, index|
+            display_skipped(result, index)
+          end
         end
 
         io.print "\n\n"
         io.puts statistics
         io.puts color(summary, color)
 
-        if failing_results.any?
-          io.puts "\nFailed Tests:\n"
-          failing_results.each {|result| display_replay_command(result) }
-          io.puts "\n\n"
-        end
+        return unless failing_results.any?
+
+        io.puts "\nFailed Tests:\n"
+        failing_results.each {|result| display_replay_command(result) }
+        io.puts "\n\n"
       end
 
-      private
-
-      def statistics
-        "Finished in %.6fs, %.4f runs/s, %.4f assertions/s." %
-          [total_time, count / total_time, assertions / total_time]
+      private def statistics
+        format(
+          "Finished in %.6fs, %.4f runs/s, %.4f assertions/s.",
+          total_time,
+          count / total_time,
+          assertions / total_time
+        )
       end
 
-      def summary # :nodoc:
+      private def summary # :nodoc:
         [
           pluralize("run", count),
           pluralize("assertion", assertions),
@@ -77,40 +88,37 @@ module Minitest
         ].join(", ")
       end
 
-      def indent(text)
+      private def indent(text)
         text.gsub(/^/, "      ")
       end
 
-      def display_failing(result, index)
+      private def display_failing(result, index)
         backtrace = backtrace(result.failure.backtrace)
         message = result.failure.message
         message = message.lines.tap(&:pop).join.chomp if result.error?
 
-        str = "\n\n"
-        str << color("%4d) %s" % [index, result_name(result.name)])
-        str << "\n" << color(indent(message), :red)
-        str << "\n" << color(backtrace, :blue)
-        io.print str
+        output = ["\n\n"]
+        output << color(format("%4d) %s", index, result_name(result.name)))
+        output << "\n" << color(indent(message), :red)
+        output << "\n" << color(backtrace, :blue)
+        io.print output.join
       end
 
-      def display_skipped(result, index)
+      private def display_skipped(result, index)
         location = location(result.failure.location)
         str = "\n\n"
-        str << color("%4d) %s [SKIPPED]" % [index, result_name(result.name)], :yellow)
+        str << color(
+          format("%4d) %s [SKIPPED]", index, result_name(result.name)), :yellow
+        )
         str << "\n" << indent(color(location, :yellow))
         io.print str
       end
 
-      def display_replay_command(result)
+      private def display_replay_command(result)
         location, line = find_test_file(result)
         return if location.empty?
 
-        command = if defined?(Rails) && Rails.version >= "5.0.0"
-                    %[bin/rails test #{location}:#{line}]
-                  else
-                    bundle = "bundle exec " if defined?(Bundler)
-                    %[#{bundle}rake TEST=#{location} TESTOPTS="--name=#{result.name}"]
-                  end
+        command = build_test_command(location, line, result)
 
         str = "\n"
         str << color(command, :red)
@@ -118,49 +126,53 @@ module Minitest
         io.print str
       end
 
-      def find_test_file(result)
+      private def find_test_file(result)
         location, line = if result.respond_to?(:source_location)
                            result.source_location
                          else
                            result.method(result.name).source_location
                          end
 
-        location = location.gsub(%r[^.*?/((?:test|spec)/.*?)$], "\\1")
+        location = location.gsub(%r{^.*?/((?:test|spec)/.*?)$}, "\\1")
 
         [location, line]
       end
 
-      def backtrace(backtrace)
-        backtrace = filter_backtrace(backtrace).map {|line| location(line, true) }
+      private def backtrace(backtrace)
+        backtrace = filter_backtrace(backtrace).map do |line|
+          location(line, true)
+        end
+
         return if backtrace.empty?
+
         indent(backtrace.join("\n")).gsub(/^(\s+)/, "\\1# ")
       end
 
-      def location(location, include_line_number = false)
+      private def location(location, include_line_number = false)
         regex = include_line_number ? /^([^:]+:\d+)/ : /^([^:]+)/
         location = File.expand_path(location[regex, 1])
 
         return location unless location.start_with?(Dir.pwd)
 
-        location.gsub(%r[^#{Regexp.escape(Dir.pwd)}/], "")
+        location.gsub(%r{^#{Regexp.escape(Dir.pwd)}/}, "")
       end
 
-      def filter_backtrace(backtrace)
+      private def filter_backtrace(backtrace)
         Minitest.backtrace_filter.filter(backtrace)
       end
 
-      def result_name(name)
+      private def result_name(name)
         name
           .gsub(/^test(_\d+)?_/, "")
           .gsub(/_/, " ")
       end
 
-      def print_result_code(result_code)
+      private def print_result_code(result_code)
         result_code = color(result_code, COLOR_FOR_RESULT_CODE[result_code])
         io.print result_code
       end
 
-      def color(string, color = :default)
+      private def color(string, color = :default)
         if color_enabled?
           color = COLOR.fetch(color, 0)
           "\e[#{color}m#{string}\e[0m"
@@ -169,11 +181,11 @@ module Minitest
         end
       end
 
-      def color_enabled?
+      private def color_enabled?
         @color_enabled
       end
 
-      def pluralize(word, count)
+      private def pluralize(word, count)
         case count
         when 0
           "no #{word}s"
@@ -181,6 +193,20 @@ module Minitest
           "1 #{word}"
         else
           "#{count} #{word}s"
+        end
+      end
+
+      private def running_rails?
+        defined?(Rails) &&
+        Rails.version >= "5.0.0"
+      end
+
+      private def build_test_command(location, line, result)
+        if running_rails?
+          %[bin/rails test #{location}:#{line}]
+        else
+          bundle = "bundle exec " if defined?(Bundler)
+          %[#{bundle}rake TEST=#{location} TESTOPTS="--name=#{result.name}"]
         end
       end
     end
