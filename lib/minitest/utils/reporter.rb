@@ -106,12 +106,12 @@ module Minitest
 
       private def display_skipped(result, index)
         location = location(result.failure.location)
-        str = "\n\n"
-        str << color(
+        output = ["\n\n"]
+        output << color(
           format("%4d) %s [SKIPPED]", index, result_name(result.name)), :yellow
         )
-        str << "\n" << indent(color(location, :yellow))
-        io.print str
+        output << "\n" << indent(color(location, :yellow))
+        io.print output.join
       end
 
       private def display_replay_command(result)
@@ -120,10 +120,10 @@ module Minitest
 
         command = build_test_command(location, line, result)
 
-        str = "\n"
-        str << color(command, :red)
+        output = ["\n"]
+        output << color(command, :red)
 
-        io.print str
+        io.print output.join
       end
 
       private def find_test_file(result)
