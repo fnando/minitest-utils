@@ -15,3 +15,12 @@ Metrics/AbcSize:
 Style/GlobalVars:
   Exclude:
     - test/minitest/utils/let_test.rb
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false

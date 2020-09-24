@@ -10,6 +10,7 @@ Gem::Specification.new do |spec|
   spec.summary       = "Some utilities for your Minitest day-to-day usage."
   spec.description   = spec.summary
   spec.homepage      = "http://github.com/fnando/minitest-utils"
+  spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
 
   spec.files         = `git ls-files -z`
                        .split("\x0")

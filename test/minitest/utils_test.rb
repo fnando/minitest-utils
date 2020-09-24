@@ -5,8 +5,8 @@ require "test_helper"
 class MinitestUtilsTest < Minitest::Test
   def capture_exception
     yield
-  rescue Exception => e # rubocop:disable Lint/RescueException
-    e
+  rescue Exception => error # rubocop:disable Lint/RescueException
+    error
   end
 
   test "defines method name" do

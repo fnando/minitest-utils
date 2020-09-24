@@ -2,7 +2,7 @@
 
 module Minitest
   module Utils
-    class Reporter < Minitest::StatisticsReporter # rubocop:disable Metrics/ClassLength
+    class Reporter < Minitest::StatisticsReporter
       COLOR_FOR_RESULT_CODE = {
         "." => :green,
         "E" => :red,
