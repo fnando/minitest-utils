@@ -11,7 +11,7 @@ module ActionDispatch
       Capybara.use_default_driver
     end
 
-    def self.use_javascript!(raise_on_javascript_errors: true) # rubocop:disable Metrics/MethodLength
+    def self.use_javascript!(raise_on_javascript_errors: true)
       setup do
         Capybara.current_driver = Capybara.javascript_driver
       end

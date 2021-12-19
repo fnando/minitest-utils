@@ -35,7 +35,7 @@ module Minitest
         io.puts
       end
 
-      def report # rubocop:disable Metrics/MethodLength
+      def report
         super
         io.sync = true
 
@@ -148,7 +148,7 @@ module Minitest
         indent(backtrace.join("\n")).gsub(/^(\s+)/, "\\1# ")
       end
 
-      private def location(location, include_line_number = false)
+      private def location(location, include_line_number = false) # rubocop:disable Style/OptionalBooleanParameter
         regex = include_line_number ? /^([^:]+:\d+)/ : /^([^:]+)/
         location = File.expand_path(location[regex, 1])
 
@@ -164,7 +164,7 @@ module Minitest
       private def result_name(name)
         name
           .gsub(/^test(_\d+)?_/, "")
-          .gsub(/_/, " ")
+          .tr("_", " ")
       end
 
       private def print_result_code(result_code)

@@ -57,12 +57,12 @@ module Minitest
       include mod
     end
 
-    def self.let(name, &block) # rubocop:disable Metrics/MethodLength
+    def self.let(name, &block)
       target = begin
-                 instance_method(name)
-               rescue StandardError
-                 nil
-               end
+        instance_method(name)
+      rescue StandardError
+        nil
+      end
 
       message = "Cannot define let(:#{name});"
 

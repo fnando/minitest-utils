@@ -4,8 +4,7 @@ module Minitest
   module Utils
     module Locale
       class << self
-        attr_accessor :setup
-        attr_accessor :teardown
+        attr_accessor :setup, :teardown
       end
 
       self.setup = proc do

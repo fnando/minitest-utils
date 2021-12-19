@@ -3,7 +3,7 @@ inherit_gem:
   rubocop-fnando: .rubocop.yml
 
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 2.7
 
 Metrics/LineLength:
   Exclude:
@@ -16,11 +16,5 @@ Style/GlobalVars:
   Exclude:
     - test/minitest/utils/let_test.rb
 
-Metrics/ClassLength:
-  Enabled: false
-
-Metrics/PerceivedComplexity:
-  Enabled: false
-
-Metrics/CyclomaticComplexity:
+Metrics:
   Enabled: false
