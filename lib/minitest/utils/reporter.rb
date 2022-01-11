@@ -149,6 +149,10 @@ module Minitest
       end
 
       private def location(location, include_line_number = false) # rubocop:disable Style/OptionalBooleanParameter
+        matches = location.match(/^(<.*?>)/)
+
+        return matches[1] if matches
+
         regex = include_line_number ? /^([^:]+:\d+)/ : /^([^:]+)/
         location = File.expand_path(location[regex, 1])
 
