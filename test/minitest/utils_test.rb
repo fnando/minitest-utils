@@ -10,7 +10,9 @@ class MinitestUtilsTest < Minitest::Test
   end
 
   test "defines method name" do
-    assert MinitestUtilsTest.instance_methods.include?(:test_defines_method_name)
+    assert(
+      MinitestUtilsTest.instance_methods.include?(:test_defines_method_name)
+    )
   end
 
   test "improves assert message" do

@@ -24,7 +24,10 @@ class LetTest < Minitest::Test
         self.class.let(:count) { true }
       end, ArgumentError
 
-    assert_equal "Cannot define let(:count); method already defined by LetTest.", exception.message
+    expected_message =
+      "Cannot define let(:count); method already defined by LetTest."
+
+    assert_equal expected_message, exception.message
   end
 
   test "cannot start with test" do
@@ -33,6 +36,9 @@ class LetTest < Minitest::Test
         self.class.let(:test_number) { true }
       end, ArgumentError
 
-    assert_equal "Cannot define let(:test_number); method cannot begin with 'test'.", exception.message
+    expected_message =
+      "Cannot define let(:test_number); method cannot begin with 'test'."
+
+    assert_equal expected_message, exception.message
   end
 end
