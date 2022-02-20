@@ -5,16 +5,6 @@ inherit_gem:
 AllCops:
   TargetRubyVersion: 2.7
 
-Metrics/LineLength:
-  Exclude:
-    - test/**/*
-
-Metrics/AbcSize:
-  Enabled: false
-
 Style/GlobalVars:
   Exclude:
     - test/minitest/utils/let_test.rb
-
-Metrics:
-  Enabled: false
