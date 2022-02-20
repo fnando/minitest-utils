@@ -9,8 +9,12 @@ module Minitest
     reporters.clear
     reporters << Minitest::Utils::Reporter.new(options[:io], options)
 
-    return unless defined?(TestNotifier)
-
-    reporters << TestNotifierReporter.new(options[:io], options)
+    begin
+      require "test_notifier"
+      reporters << Minitest::Utils::TestNotifierReporter.new(options[:io],
+                                                             options)
+    rescue LoadError
+      # noop
+    end
   end
 end
