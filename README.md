@@ -75,10 +75,10 @@ end
 
 ## Screenshots
 
-![](https://raw.githubusercontent.com/fnando/minitest-utils/master/screenshots/light-failing.png)
-![](https://raw.githubusercontent.com/fnando/minitest-utils/master/screenshots/light-success.png)
-![](https://raw.githubusercontent.com/fnando/minitest-utils/master/screenshots/dark-failing.png)
-![](https://raw.githubusercontent.com/fnando/minitest-utils/master/screenshots/dark-success.png)
+![](https://raw.githubusercontent.com/fnando/minitest-utils/main/screenshots/light-failing.png)
+![](https://raw.githubusercontent.com/fnando/minitest-utils/main/screenshots/light-success.png)
+![](https://raw.githubusercontent.com/fnando/minitest-utils/main/screenshots/dark-failing.png)
+![](https://raw.githubusercontent.com/fnando/minitest-utils/main/screenshots/dark-success.png)
 
 ## Rails extensions
 
