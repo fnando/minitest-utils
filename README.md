@@ -6,7 +6,7 @@ Includes:
 
 - A better reporter (see screenshot below)
 - A [TestNotifier](http://github.com/fnando/test_notifier) reporter
-- Some Rails niceties (set up FactoryGirl, WebMock and Capybara)
+- Some Rails niceties (set up FactoryBot, WebMock and Capybara)
 - Add a `t` and `l` methods (i18n)
 
 ## Installation
@@ -27,7 +27,8 @@ Or install it yourself as:
 
 ## Defining tests
 
-This gem adds the `Minitest::Test.test` method, so you can easy define your methods like the following:
+This gem adds the `Minitest::Test.test` method, so you can easy define your
+methods like the following:
 
 ```ruby
 class SampleTest < Minitest::Test
@@ -37,7 +38,10 @@ class SampleTest < Minitest::Test
 end
 ```
 
-This is equivalent to defining a method named `test_useless_test`. You can also skip the block, which will define a [flunk](https://github.com/seattlerb/minitest/blob/77120c5b2511c4665610cda06c8058c801b28e7f/lib/minitest/assertions.rb#L477-L480) call.
+This is equivalent to defining a method named `test_useless_test`. You can also
+skip the block, which will define a
+[flunk](https://github.com/seattlerb/minitest/blob/77120c5b2511c4665610cda06c8058c801b28e7f/lib/minitest/assertions.rb#L477-L480)
+call.
 
 You can also define `setup` and `teardown` steps.
 
@@ -80,11 +84,21 @@ end
 
 minitest-utils sets up some things for your Rails application.
 
-- [Capybara](https://github.com/jnicklas/capybara): includes `Capybara::DSL`, sets default driver before every test, resets session and creates a helper method for setting JavaScript driver. If you have [poltergeist](https://github.com/teampoltergeist/poltergeist) installed, it will be used as the default JavaScript driver.
-- [FactoryGirl](https://github.com/thoughtbot/factory_girl): adds methods to `ActiveSupport::TestCase`.
-- [WebMock](https://github.com/bblimke/webmock): disables external requests (except for codeclimate) and tracks all requests on `WebMock.requests`.
-- locale routes: sets `Rails.application.routes.default_url_options[:locale]` with your current locale.
-- [DatabaseCleaner](https://github.com/DatabaseCleaner/database_cleaner): configure database before running each test. You can configure the strategy by settings `DatabaseCleaner.strategy = :truncation`, for instance. It defaults to `:deletion`.
+- [Capybara](https://github.com/jnicklas/capybara): includes `Capybara::DSL`,
+  sets default driver before every test, resets session and creates a helper
+  method for setting JavaScript driver. If you have
+  [poltergeist](https://github.com/teampoltergeist/poltergeist) installed, it
+  will be used as the default JavaScript driver.
+- [FactoryBot](https://github.com/thoughtbot/factory_girl): adds methods to
+  `ActiveSupport::TestCase`.
+- [WebMock](https://github.com/bblimke/webmock): disables external requests
+  (except for codeclimate) and tracks all requests on `WebMock.requests`.
+- locale routes: sets `Rails.application.routes.default_url_options[:locale]`
+  with your current locale.
+- [DatabaseCleaner](https://github.com/DatabaseCleaner/database_cleaner):
+  configure database before running each test. You can configure the strategy by
+  settings `DatabaseCleaner.strategy = :truncation`, for instance. It defaults
+  to `:deletion`.
 - Other: `t` and `l` alias to I18n.
 
 ```ruby
@@ -93,7 +107,8 @@ class SignupTest < ActionDispatch::IntegrationTtest
 end
 ```
 
-Also, if you're using routes like `:locale` scope, you can load this file to automatically set your route's `:locale` param.
+Also, if you're using routes like `:locale` scope, you can load this file to
+automatically set your route's `:locale` param.
 
 ```ruby
 require 'minitest/utils/rails/locale'
@@ -101,9 +116,13 @@ require 'minitest/utils/rails/locale'
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/setup` to install dependencies. Then, run
+`bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release` to create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To install this gem onto your local machine, run `bundle exec rake install`. To
+release a new version, update the version number in `version.rb`, and then run
+`bundle exec rake release` to create a git tag for the version, push git commits
+and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 
