@@ -89,7 +89,7 @@ minitest-utils sets up some things for your Rails application.
   method for setting JavaScript driver. If you have
   [poltergeist](https://github.com/teampoltergeist/poltergeist) installed, it
   will be used as the default JavaScript driver.
-- [FactoryBot](https://github.com/thoughtbot/factory_girl): adds methods to
+- [FactoryBot](https://github.com/thoughtbot/factory_bot): adds methods to
   `ActiveSupport::TestCase`.
 - [WebMock](https://github.com/bblimke/webmock): disables external requests
   (except for codeclimate) and tracks all requests on `WebMock.requests`.
