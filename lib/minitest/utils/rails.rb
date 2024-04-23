@@ -23,12 +23,12 @@ module ActiveSupport
 
     require "minitest/utils/rails/capybara" if defined?(Capybara)
 
-    def t(*args)
-      I18n.t(*args)
+    def t(*args, **kwargs)
+      I18n.t(*args, **kwargs)
     end
 
-    def l(*args)
-      I18n.l(*args)
+    def l(*args, **kwargs)
+      I18n.l(*args, **kwargs)
     end
   end
 end
