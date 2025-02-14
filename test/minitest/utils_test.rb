@@ -10,8 +10,8 @@ class MinitestUtilsTest < Minitest::Test
   end
 
   test "defines method name" do
-    assert(
-      MinitestUtilsTest.instance_methods.include?(:test_defines_method_name)
+    assert_includes(
+      MinitestUtilsTest.instance_methods, :test_defines_method_name
     )
   end
 
@@ -32,6 +32,20 @@ class MinitestUtilsTest < Minitest::Test
         test "some test"
       end
     end
+  end
+
+  test "defines test with weird names" do
+    test_case = Class.new(Minitest::Test) do
+      test("with parens (nice)") { assert true }
+      test("with brackets [nice]") { assert true }
+      test("with   multiple   spaces") { assert true }
+      test("with   underscores   __") { assert true }
+    end
+
+    assert_includes test_case.instance_methods, :test_with_parens_nice
+    assert_includes test_case.instance_methods, :test_with_brackets_nice
+    assert_includes test_case.instance_methods, :test_with_multiple_spaces
+    assert_includes test_case.instance_methods, :test_with_underscores
   end
 
   test "flunks method without block" do

@@ -19,7 +19,11 @@ module Minitest
     include ::Minitest::Utils::Assertions
 
     def self.test(name, &block)
-      test_name = "test_#{name.gsub(/\s+/, '_')}".to_sym
+      name = name.gsub(/[^a-z0-9]+/, "_")
+                 .gsub(/^_+/, "")
+                 .gsub(/_+$/, "")
+                 .gsub(/_+/, "_")
+      test_name = "test_#{name}".to_sym
       defined = method_defined? test_name
 
       raise "#{test_name} is already defined in #{self}" if defined

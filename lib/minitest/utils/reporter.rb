@@ -207,6 +207,15 @@ module Minitest
       end
 
       private def build_test_command(location, line, result)
+        if ENV["MINITEST_TEST_COMMAND"]
+          return format(
+            ENV["MINITEST_TEST_COMMAND"],
+            location: location,
+            line: line,
+            name: result.name
+          )
+        end
+
         if running_rails?
           %[bin/rails test #{location}:#{line}]
         else
