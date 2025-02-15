@@ -19,7 +19,8 @@ module Minitest
     include ::Minitest::Utils::Assertions
 
     def self.test(name, &block)
-      name = name.gsub(/[^a-z0-9]+/, "_")
+      name = name.downcase
+                 .gsub(/[^a-z0-9]+/, "_")
                  .gsub(/^_+/, "")
                  .gsub(/_+$/, "")
                  .gsub(/_+/, "_")

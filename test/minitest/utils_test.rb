@@ -40,12 +40,14 @@ class MinitestUtilsTest < Minitest::Test
       test("with brackets [nice]") { assert true }
       test("with   multiple   spaces") { assert true }
       test("with   underscores   __") { assert true }
+      test("with UPPERCASE") { assert true }
     end
 
     assert_includes test_case.instance_methods, :test_with_parens_nice
     assert_includes test_case.instance_methods, :test_with_brackets_nice
     assert_includes test_case.instance_methods, :test_with_multiple_spaces
     assert_includes test_case.instance_methods, :test_with_underscores
+    assert_includes test_case.instance_methods, :test_with_uppercase
   end
 
   test "flunks method without block" do
