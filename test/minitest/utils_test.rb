@@ -17,11 +17,13 @@ class MinitestUtilsTest < Minitest::Test
 
   test "improves assert message" do
     exception = capture_exception { assert nil }
+
     assert_equal "expected: truthy value\ngot: nil", exception.message
   end
 
   test "improves refute message" do
     exception = capture_exception { refute 1234 }
+
     assert_equal "expected: falsy value\ngot: 1234", exception.message
   end
 
@@ -68,7 +70,7 @@ class MinitestUtilsTest < Minitest::Test
       setup { setups << 2 }
       setup { setups << 3 }
 
-      test("do something") { }
+      test("do something") { assert(true) }
     end
 
     test_case.new(Minitest::AbstractReporter).run
@@ -84,7 +86,7 @@ class MinitestUtilsTest < Minitest::Test
       teardown { teardowns << 2 }
       teardown { teardowns << 3 }
 
-      test("do something") { }
+      test("do something") { assert(true) }
     end
 
     test_case.new(Minitest::AbstractReporter).run

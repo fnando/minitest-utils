@@ -18,19 +18,34 @@ module Minitest
   class Test
     include ::Minitest::Utils::Assertions
 
+    def self.tests
+      @tests ||= []
+    end
+
     def self.test(name, &block)
-      name = name.downcase
-                 .gsub(/[^a-z0-9]+/, "_")
-                 .gsub(/^_+/, "")
-                 .gsub(/_+$/, "")
-                 .gsub(/_+/, "_")
-      test_name = "test_#{name}".to_sym
+      source_location = caller_locations(1..1).first
+      method_name = name.downcase
+                        .gsub(/[^a-z0-9]+/, "_")
+                        .gsub(/^_+/, "")
+                        .gsub(/_+$/, "").squeeze("_")
+      test_name = "test_#{method_name}".to_sym
       defined = method_defined? test_name
+      testable = proc do
+        benchmark = Benchmark.measure { instance_eval(&block) }
+
+        Test.tests << {
+          class: self.class,
+          name: name,
+          test_name: test_name,
+          benchmark: benchmark,
+          source_location:
+        }
+      end
 
       raise "#{test_name} is already defined in #{self}" if defined
 
-      if block_given?
-        define_method(test_name, &block)
+      if block
+        define_method(test_name, &testable)
       else
         define_method(test_name) do
           flunk "No implementation provided for #{name}"

@@ -14,7 +14,8 @@ module Minitest
         red: 31,
         green: 32,
         yellow: 33,
-        blue: 34
+        blue: 34,
+        gray: 37
       }.freeze
 
       def initialize(*)
@@ -62,11 +63,47 @@ module Minitest
         io.puts statistics
         io.puts color(summary, color)
 
-        return unless failing_results.any?
+        if failing_results.any?
+          io.puts "\nFailed Tests:\n"
+          failing_results.each {|result| display_replay_command(result) }
+          io.puts "\n\n"
+        else
+          io.puts "\nSlow Tests:\n"
+          threshold = 0.1 # 100ms
+          test_results =
+            Test
+            .tests
+            .sort_by { _1[:benchmark].total }
+            .reverse
+            .take(10).filter { _1[:benchmark].total > threshold }
+          pwd = Pathname(Dir.pwd)
 
-        io.puts "\nFailed Tests:\n"
-        failing_results.each {|result| display_replay_command(result) }
-        io.puts "\n\n"
+          test_results.each_with_index do |info, index|
+            relative_path = Pathname(info[:source_location].absolute_path)
+                            .relative_path_from(pwd)
+            location = "#{relative_path}:#{info[:source_location].lineno}"
+            duration = humanize_duration(info[:benchmark].total * 1_000_000_000)
+
+            prefix = "#{index + 1}) "
+            padding = " " * prefix.size
+
+            io.puts color("#{prefix}#{info[:name]} (#{duration})", :red)
+            io.puts color("#{padding}#{location}", :gray)
+            io.puts
+          end
+        end
+      end
+
+      private def humanize_duration(duration_ns)
+        if duration_ns < 1000
+          format("%.2f ns", duration_ns)
+        elsif duration_ns < 1_000_000
+          format("%.2f μs", (duration_ns / 1000))
+        elsif duration_ns < 1_000_000_000
+          format("%.2f ms", (duration_ns / 1_000_000))
+        else
+          format("%.2f s", (duration_ns / 1_000_000_000))
+        end
       end
 
       private def statistics

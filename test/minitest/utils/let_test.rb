@@ -19,10 +19,9 @@ class LetTest < Minitest::Test
   end
 
   test "cannot override existing method" do
-    exception, * =
-      assert_raises do
-        self.class.let(:count) { true }
-      end, ArgumentError
+    exception = assert_raises(ArgumentError) do
+      self.class.let(:count) { true }
+    end
 
     expected_message =
       "Cannot define let(:count); method already defined by LetTest."
@@ -31,10 +30,9 @@ class LetTest < Minitest::Test
   end
 
   test "cannot start with test" do
-    exception, * =
-      assert_raises do
-        self.class.let(:test_number) { true }
-      end, ArgumentError
+    exception = assert_raises(ArgumentError) do
+      self.class.let(:test_number) { true }
+    end
 
     expected_message =
       "Cannot define let(:test_number); method cannot begin with 'test'."

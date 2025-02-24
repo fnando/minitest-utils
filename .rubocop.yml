@@ -3,8 +3,11 @@ inherit_gem:
   rubocop-fnando: .rubocop.yml
 
 AllCops:
-  TargetRubyVersion: 2.7
+  TargetRubyVersion: 3.2
 
 Style/GlobalVars:
   Exclude:
     - test/minitest/utils/let_test.rb
+
+Minitest/UselessAssertion:
+  Enabled: false

@@ -28,7 +28,7 @@ module ActionDispatch
 
         messages = errors
                    .map(&:message)
-                   .map {|message| message[/(\d+:\d+ .*?)$/, 1] }
+                   .map! {|message| message[/(\d+:\d+ .*?)$/, 1] }
                    .join("\n")
 
         raise "JavaScript Errors\n#{messages}"
