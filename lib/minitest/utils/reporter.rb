@@ -68,20 +68,22 @@ module Minitest
           failing_results.each {|result| display_replay_command(result) }
           io.puts "\n\n"
         else
-          io.puts "\nSlow Tests:\n"
           threshold = 0.1 # 100ms
           test_results =
             Test
             .tests
+            .values
+            .select { _1[:benchmark] }
             .sort_by { _1[:benchmark].total }
             .reverse
             .take(10).filter { _1[:benchmark].total > threshold }
-          pwd = Pathname(Dir.pwd)
+
+          return unless test_results.any?
+
+          io.puts "\nSlow Tests:\n"
 
           test_results.each_with_index do |info, index|
-            relative_path = Pathname(info[:source_location].absolute_path)
-                            .relative_path_from(pwd)
-            location = "#{relative_path}:#{info[:source_location].lineno}"
+            location = info[:source_location].join(":")
             duration = humanize_duration(info[:benchmark].total * 1_000_000_000)
 
             prefix = "#{index + 1}) "
@@ -164,15 +166,9 @@ module Minitest
       end
 
       private def find_test_file(result)
-        location, line = if result.respond_to?(:source_location)
-                           result.source_location
-                         else
-                           result.method(result.name).source_location
-                         end
+        info = Test.tests.fetch("#{result.klass}##{result.name}")
 
-        location = location.gsub(%r{^.*?/((?:test|spec)/.*?)$}, "\\1")
-
-        [location, line]
+        info[:source_location]
       end
 
       private def backtrace(backtrace)
@@ -199,7 +195,8 @@ module Minitest
       end
 
       private def filter_backtrace(backtrace)
-        Minitest.backtrace_filter.filter(backtrace)
+        # drop the last line, which is from benchmark.
+        Minitest.backtrace_filter.filter(backtrace)[0..-2]
       end
 
       private def result_name(name)

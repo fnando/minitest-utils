@@ -19,27 +19,33 @@ module Minitest
     include ::Minitest::Utils::Assertions
 
     def self.tests
-      @tests ||= []
+      @tests ||= {}
     end
 
     def self.test(name, &block)
       source_location = caller_locations(1..1).first
+      source_location = [
+        Pathname(source_location.path).relative_path_from(Pathname(Dir.pwd)),
+        source_location.lineno
+      ]
+
+      klass = self.name
       method_name = name.downcase
                         .gsub(/[^a-z0-9]+/, "_")
                         .gsub(/^_+/, "")
                         .gsub(/_+$/, "").squeeze("_")
       test_name = "test_#{method_name}".to_sym
-      defined = method_defined? test_name
+      defined = method_defined?(test_name)
+
+      Test.tests["#{klass}##{test_name}"] = {
+        name: name,
+        source_location:,
+        benchmark: nil
+      }
+
       testable = proc do
         benchmark = Benchmark.measure { instance_eval(&block) }
-
-        Test.tests << {
-          class: self.class,
-          name: name,
-          test_name: test_name,
-          benchmark: benchmark,
-          source_location:
-        }
+        Test.tests["#{klass}##{test_name}"][:benchmark] = benchmark
       end
 
       raise "#{test_name} is already defined in #{self}" if defined
