@@ -191,7 +191,7 @@ module Minitest
 
         return location unless path
 
-        location = File.expand_path
+        location = File.expand_path(path)
 
         return location unless location.start_with?(Dir.pwd)
 
