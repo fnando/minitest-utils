@@ -187,7 +187,11 @@ module Minitest
         return matches[1] if matches
 
         regex = include_line_number ? /^([^:]+:\d+)/ : /^([^:]+)/
-        location = File.expand_path(location[regex, 1])
+        path = location[regex, 1]
+
+        return location unless path
+
+        location = File.expand_path
 
         return location unless location.start_with?(Dir.pwd)
 
