@@ -199,8 +199,7 @@ module Minitest
       end
 
       private def filter_backtrace(backtrace)
-        # drop the last line, which is from benchmark.
-        Minitest.backtrace_filter.filter(backtrace)[0..-2]
+        Minitest.backtrace_filter.filter(backtrace)
       end
 
       private def result_name(name)
