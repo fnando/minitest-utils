@@ -3,6 +3,10 @@
 module Minitest
   module Utils
     class Reporter < Minitest::StatisticsReporter
+      def self.filters
+        @filters ||= [/'Benchmark.measure'/]
+      end
+
       COLOR_FOR_RESULT_CODE = {
         "." => :green,
         "E" => :red,
@@ -199,7 +203,9 @@ module Minitest
       end
 
       private def filter_backtrace(backtrace)
-        Minitest.backtrace_filter.filter(backtrace)
+        Minitest.backtrace_filter
+                .filter(backtrace)
+                .reject {|line| Reporter.filters.any? { line.match?(_1) } }
       end
 
       private def result_name(name)
