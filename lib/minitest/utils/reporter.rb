@@ -93,7 +93,7 @@ module Minitest
             prefix = "#{index + 1}) "
             padding = " " * prefix.size
 
-            io.puts color("#{prefix}#{info[:name]} (#{duration})", :red)
+            io.puts color("#{prefix}#{info[:description]} (#{duration})", :red)
             io.puts color("#{padding}#{location}", :gray)
             io.puts
           end
@@ -204,7 +204,7 @@ module Minitest
         Minitest.backtrace_filter
                 .filter(backtrace)
                 .reject {|line| Reporter.filters.any? { line.match?(_1) } }
-                .reject {|line| !line.start_with?(Dir.pwd) }
+                .select {|line| line.start_with?(Dir.pwd) }
       end
 
       private def result_name(name)

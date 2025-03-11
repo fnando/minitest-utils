@@ -38,13 +38,15 @@ module Minitest
         source_location.lineno
       ]
 
-      klass = self.name
+      klass = name
       test_name = test_method_name(description)
       defined = method_defined?(test_name)
+      id = "#{klass}##{test_name}"
 
-      Test.tests["#{klass}##{test_name}"] = {
+      Test.tests[id] = {
+        id:,
         description:,
-        name: name,
+        name: test_name,
         source_location:,
         benchmark: nil
       }
