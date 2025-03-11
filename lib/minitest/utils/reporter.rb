@@ -158,10 +158,10 @@ module Minitest
       end
 
       private def display_replay_command(result)
-        location, line = find_test_file(result)
-        return if location.empty?
+        test = find_test_file(result)
+        return if test[:source_location].empty?
 
-        command = build_test_command(location, line, result)
+        command = build_test_command(test, result)
 
         output = ["\n"]
         output << color(command, :red)
@@ -170,9 +170,7 @@ module Minitest
       end
 
       private def find_test_file(result)
-        info = Test.tests.fetch("#{result.klass}##{result.name}")
-
-        info[:source_location]
+        Test.tests.fetch("#{result.klass}##{result.name}")
       end
 
       private def backtrace(backtrace)
@@ -199,13 +197,14 @@ module Minitest
 
         return location unless location.start_with?(Dir.pwd)
 
-        location.gsub(%r{^#{Regexp.escape(Dir.pwd)}/}, "")
+        location.delete_prefix("#{Dir.pwd}/")
       end
 
       private def filter_backtrace(backtrace)
         Minitest.backtrace_filter
                 .filter(backtrace)
                 .reject {|line| Reporter.filters.any? { line.match?(_1) } }
+                .reject {|line| !line.start_with?(Dir.pwd) }
       end
 
       private def result_name(name)
@@ -249,12 +248,15 @@ module Minitest
         Rails.version >= "5.0.0"
       end
 
-      private def build_test_command(location, line, result)
+      private def build_test_command(test, result)
+        location, line = test[:source_location]
+
         if ENV["MINITEST_TEST_COMMAND"]
           return format(
             ENV["MINITEST_TEST_COMMAND"],
             location: location,
             line: line,
+            description: test[:description],
             name: result.name
           )
         end

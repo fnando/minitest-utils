@@ -22,7 +22,16 @@ module Minitest
       @tests ||= {}
     end
 
-    def self.test(name, &block)
+    def self.test_method_name(description)
+      method_name = description.downcase
+                               .gsub(/[^a-z0-9]+/, "_")
+                               .gsub(/^_+/, "")
+                               .gsub(/_+$/, "")
+                               .squeeze("_")
+      "test_#{method_name}".to_sym
+    end
+
+    def self.test(description, &block)
       source_location = caller_locations(1..1).first
       source_location = [
         Pathname(source_location.path).relative_path_from(Pathname(Dir.pwd)),
@@ -30,14 +39,11 @@ module Minitest
       ]
 
       klass = self.name
-      method_name = name.downcase
-                        .gsub(/[^a-z0-9]+/, "_")
-                        .gsub(/^_+/, "")
-                        .gsub(/_+$/, "").squeeze("_")
-      test_name = "test_#{method_name}".to_sym
+      test_name = test_method_name(description)
       defined = method_defined?(test_name)
 
       Test.tests["#{klass}##{test_name}"] = {
+        description:,
         name: name,
         source_location:,
         benchmark: nil
