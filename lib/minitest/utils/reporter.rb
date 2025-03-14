@@ -140,25 +140,38 @@ module Minitest
         message = result.failure.message
         message = message.lines.tap(&:pop).join.chomp if result.error?
 
+        test = find_test_info(result)
+
         output = ["\n\n"]
-        output << color(format("%4d) %s", index, result_name(result.name)))
+        output << color(format("%4d) %s", index, test[:description]))
         output << "\n" << color(indent(message), :red)
         output << "\n" << color(backtrace, :blue)
         io.print output.join
       end
 
       private def display_skipped(result, index)
-        location = location(result.failure.location)
+        location = filter_backtrace(
+          result
+            .failure
+            .backtrace_locations
+            .map {|l| [l.path, l.lineno].join(":") }
+        ).first
+
+        location, line = location.to_s.split(":")
+        location = Pathname(location).relative_path_from(Pathname.pwd)
+        location = "#{location}:#{line}"
+
+        test = find_test_info(result)
         output = ["\n\n"]
         output << color(
-          format("%4d) %s [SKIPPED]", index, result_name(result.name)), :yellow
+          format("%4d) %s [SKIPPED]", index, test[:description]), :yellow
         )
         output << "\n" << indent(color(location, :yellow))
         io.print output.join
       end
 
       private def display_replay_command(result)
-        test = find_test_file(result)
+        test = find_test_info(result)
         return if test[:source_location].empty?
 
         command = build_test_command(test, result)
@@ -169,7 +182,7 @@ module Minitest
         io.print output.join
       end
 
-      private def find_test_file(result)
+      private def find_test_info(result)
         Test.tests.fetch("#{result.klass}##{result.name}")
       end
 
