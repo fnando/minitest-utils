@@ -22,6 +22,10 @@ module Minitest
       @tests ||= {}
     end
 
+    def slow_test
+      skip "slow test" unless ENV["SLOW_TESTS"]
+    end
+
     def self.test_method_name(description)
       method_name = description.downcase
                                .gsub(/[^a-z0-9]+/, "_")

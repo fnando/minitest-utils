@@ -166,7 +166,12 @@ module Minitest
         output << color(
           format("%4d) %s [SKIPPED]", index, test[:description]), :yellow
         )
+
+        message = "Reason: #{result.failure.message}"
+        output << "\n" << indent(color(message, :yellow))
+
         output << "\n" << indent(color(location, :yellow))
+
         io.print output.join
       end
 

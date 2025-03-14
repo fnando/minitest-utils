@@ -32,7 +32,7 @@ methods like the following:
 
 ```ruby
 class SampleTest < Minitest::Test
-  test 'useless test' do
+  test "useless test" do
     assert true
   end
 end
@@ -55,7 +55,23 @@ class SampleTest < Minitest::Test
     DB.disconnect
   end
 
-  test 'useless test' do
+  test "useless test" do
+    assert true
+  end
+end
+```
+
+If you want to skip slow tests, you can use the `slow_test` method, which only
+runs the test when `SLOW_TESTS` environment variable is set.
+
+```ruby
+# Only run slow tests in CI. You can bypass it locally by using
+# something like `SLOW_TESTS=1 rake`.
+ENV["SLOW_TESTS"] ||= ENV["CI"]
+
+class SampleTest < Minitest::Test
+  test "useless test" do
+    slow_test
     assert true
   end
 end
@@ -65,10 +81,10 @@ Finally, you can also use `let`.
 
 ```ruby
 class SampleTest < Minitest::Test
-  let(:token) { 'secret' }
+  let(:token) { "secret" }
 
-  test 'set token' do
-    assert_equal 'secret', token
+  test "set token" do
+    assert_equal "secret", token
   end
 end
 ```

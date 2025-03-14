@@ -3,6 +3,8 @@
 require "test_helper"
 
 class MinitestUtilsTest < Minitest::Test
+  setup { ENV.delete("SLOW_TESTS") }
+
   def capture_exception
     yield
   rescue Exception => error # rubocop:disable Lint/RescueException
@@ -60,6 +62,37 @@ class MinitestUtilsTest < Minitest::Test
     assert_raises(Minitest::Assertion) do
       test_case.new("test").test_flunk_test
     end
+  end
+
+  test "skips slow test" do
+    test_case = Class.new(Minitest::Test) do
+      test "slow test" do
+        slow_test
+      end
+    end
+
+    error = assert_raises(Minitest::Assertion) do
+      test_case.new("test").test_slow_test
+    end
+
+    assert_instance_of Minitest::Skip, error
+    assert_equal "slow test", error.message
+  end
+
+  test "runs slow test" do
+    ENV["SLOW_TESTS"] = "true"
+    ran = false
+
+    test_case = Class.new(Minitest::Test) do
+      test "slow test" do
+        slow_test
+        ran = true
+      end
+    end
+
+    test_case.new("test").test_slow_test
+
+    assert ran
   end
 
   test "defines setup steps" do
