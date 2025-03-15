@@ -110,7 +110,7 @@ module Minitest
         bundler = "bundle exec " if self.class.loaded_via_bundle_exec
 
         ENV["MT_TEST_COMMAND"] =
-          "#{bundler}mt %{location}:%{line} # %{description}"
+          "#{bundler}mt %{location}:%{line} #{color('# %{description}', :blue)}"
 
         ARGV.clear
         ARGV.push(*minitest_args)
