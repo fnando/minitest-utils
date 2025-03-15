@@ -19,8 +19,9 @@ class ReporterTest < Test
     test_case.run(reporter)
     reporter.report
 
-    Minitest::Runnable.runnables
-                      .delete_if {|klass| klass.name.start_with?("Sample") }
+    Minitest::Runnable
+      .runnables
+      .delete_if {|klass| klass.name.to_s.start_with?("Sample") }
     Minitest::Test.tests.delete_if {|key| key.start_with?("Sample") }
 
     reporter.io.tap(&:rewind).read
