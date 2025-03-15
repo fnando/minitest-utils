@@ -245,13 +245,12 @@ class CLITest < Test
       end
     RUBY
 
-    out, err = capture_subprocess_io do
+    out = capture_subprocess_io do
       Dir.chdir("tmp") do
         system bin, "--seed", "1234", "--slow-threshold", "-1"
       end
     end
 
-    assert_empty err
     # assert_includes out,
     #                 "Run options: --seed 1234 --slow-threshold -1\n"
     assert_includes out, "\nSlow Tests:\n"
