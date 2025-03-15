@@ -155,10 +155,9 @@ test/fixtures
 
 ## Screenshots
 
-![](https://raw.githubusercontent.com/fnando/minitest-utils/main/screenshots/light-failing.png)
-![](https://raw.githubusercontent.com/fnando/minitest-utils/main/screenshots/light-success.png)
-![](https://raw.githubusercontent.com/fnando/minitest-utils/main/screenshots/dark-failing.png)
-![](https://raw.githubusercontent.com/fnando/minitest-utils/main/screenshots/dark-success.png)
+![](https://raw.githubusercontent.com/fnando/minitest-utils/main/screenshots/detect-slow-tests.png)
+![](https://raw.githubusercontent.com/fnando/minitest-utils/main/screenshots/replay-command.png)
+![](https://raw.githubusercontent.com/fnando/minitest-utils/main/screenshots/slow-tests.png)
 
 ## Rails extensions
 
