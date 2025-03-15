@@ -4,6 +4,10 @@ inherit_gem:
 
 AllCops:
   TargetRubyVersion: 3.2
+  NewCops: enable
+  Exclude:
+    - vendor/**/*
+    - gemfiles/**/*
 
 Style/GlobalVars:
   Exclude:

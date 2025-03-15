@@ -27,4 +27,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop"
   spec.add_development_dependency "rubocop-fnando"
   spec.add_development_dependency "test_notifier"
+  spec.metadata["rubygems_mfa_required"] = "true"
 end

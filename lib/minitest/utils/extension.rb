@@ -5,12 +5,12 @@ module Minitest
     module Assertions
       def assert(test, message = nil)
         message ||= "expected: truthy value\ngot: #{mu_pp(test)}"
-        super(test, message)
+        super
       end
 
       def refute(test, message = nil)
         message ||= "expected: falsy value\ngot: #{mu_pp(test)}"
-        super(test, message)
+        super
       end
     end
   end
@@ -32,7 +32,7 @@ module Minitest
                                .gsub(/^_+/, "")
                                .gsub(/_+$/, "")
                                .squeeze("_")
-      "test_#{method_name}".to_sym
+      :"test_#{method_name}"
     end
 
     def self.test(description, &block)

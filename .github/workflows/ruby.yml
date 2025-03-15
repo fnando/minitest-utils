@@ -1,0 +1,62 @@
+---
+name: ruby-tests
+
+on:
+  pull_request_target:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs: {}
+
+jobs:
+  build:
+    name: Tests with Ruby ${{ matrix.ruby }} and ${{ matrix.gemfile }}
+    runs-on: "ubuntu-latest"
+    if: |
+      github.actor == 'dependabot[bot]' && github.event_name == 'pull_request_target' ||
+      github.actor != 'dependabot[bot]'
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.4", "3.3"]
+        gemfile:
+          - Gemfile
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout
+          5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: vendor/bundle
+          key: >
+            ${{ runner.os }}-${{ matrix.ruby }}-gems-${{
+            hashFiles(matrix.gemfile) }}-${{hashFiles('zee.gemspec')}}
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+
+      - name: Install gem dependencies
+        env:
+          BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+        run: |
+          gem install bundler
+          bundle config set with default:development:test
+          bundle config path vendor/bundle
+          bundle update --jobs 4 --retry 3
+
+      - name: Run Tests
+        env:
+          BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+        run: |
+          bundle exec rake
