@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class LetTest < Minitest::Test
+class LetTest < Test
   i_suck_and_my_tests_are_order_dependent!
 
   $count = 0

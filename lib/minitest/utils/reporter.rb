@@ -1,10 +1,21 @@
 # frozen_string_literal: true
 
 module Minitest
+  class Test
+    class << self
+      attr_accessor :slow_threshold
+    end
+
+    def self.inherited(child)
+      child.slow_threshold = slow_threshold
+      super
+    end
+  end
+
   module Utils
     class Reporter < Minitest::StatisticsReporter
       def self.filters
-        @filters ||= [/'Benchmark.measure'/]
+        @filters ||= []
       end
 
       COLOR_FOR_RESULT_CODE = {
@@ -32,17 +43,9 @@ module Minitest
         print_result_code(result.result_code)
       end
 
-      def start
-        super
-        io.puts "Run options: #{options[:args]}"
-        io.puts
-        io.puts "# Running:"
-        io.puts
-      end
-
       def report
         super
-        io.sync = true
+        io.sync = true if io.respond_to?(:sync)
 
         failing_results = results.reject(&:skipped?)
         skipped_results = results.select(&:skipped?)
@@ -51,17 +54,8 @@ module Minitest
         color = :yellow if skipped_results.any?
         color = :red if failing_results.any?
 
-        if failing_results.any? || skipped_results.any?
-          failing_results.each.with_index(1) do |result, index|
-            display_failing(result, index)
-          end
-
-          skipped_results
-            .each
-            .with_index(failing_results.size + 1) do |result, index|
-            display_skipped(result, index)
-          end
-        end
+        print_failing_results(failing_results)
+        print_skipped_results(skipped_results, failing_results.size)
 
         io.print "\n\n"
         io.puts statistics
@@ -72,44 +66,76 @@ module Minitest
           failing_results.each {|result| display_replay_command(result) }
           io.puts "\n\n"
         else
-          threshold = 0.1 # 100ms
-          test_results =
-            Test
-            .tests
-            .values
-            .select { _1[:benchmark] }
-            .sort_by { _1[:benchmark].total }
-            .reverse
-            .take(10).filter { _1[:benchmark].total > threshold }
-
-          return unless test_results.any?
-
-          io.puts "\nSlow Tests:\n"
-
-          test_results.each_with_index do |info, index|
-            location = info[:source_location].join(":")
-            duration = humanize_duration(info[:benchmark].total * 1_000_000_000)
-
-            prefix = "#{index + 1}) "
-            padding = " " * prefix.size
-
-            io.puts color("#{prefix}#{info[:description]} (#{duration})", :red)
-            io.puts color("#{padding}#{location}", :gray)
-            io.puts
-          end
+          print_slow_results
         end
       end
 
-      private def humanize_duration(duration_ns)
-        if duration_ns < 1000
-          format("%.2f ns", duration_ns)
-        elsif duration_ns < 1_000_000
-          format("%.2f μs", (duration_ns / 1000))
-        elsif duration_ns < 1_000_000_000
-          format("%.2f ms", (duration_ns / 1_000_000))
-        else
-          format("%.2f s", (duration_ns / 1_000_000_000))
+      def slow_threshold_for(test_case)
+        test_case[:slow_threshold] || Minitest.options[:slow_threshold] || 0.1
+      end
+
+      def slow_tests
+        Test
+          .tests
+          .values
+          .select { _1[:time] }
+          .filter { _1[:time] > slow_threshold_for(_1) }
+          .sort_by { _1[:time] }
+          .reverse
+      end
+
+      def print_failing_results(results, initial_index = 1)
+        results.each.with_index(initial_index) do |result, index|
+          display_failing(result, index)
         end
+      end
+
+      def print_skipped_results(results, initial_index)
+        results
+          .each
+          .with_index(initial_index + 1) do |result, index|
+          display_skipped(result, index)
+        end
+      end
+
+      def print_slow_results
+        test_results = slow_tests.take(10)
+
+        return if Minitest.options[:hide_slow]
+        return unless test_results.any?
+
+        io.puts "\nSlow Tests:\n"
+
+        test_results.each_with_index do |info, index|
+          location = info[:source_location].join(":")
+          duration = format_duration(info[:time])
+
+          prefix = "#{index + 1}) "
+          padding = " " * prefix.size
+
+          io.puts color("#{prefix}#{info[:description]} (#{duration})", :red)
+          io.puts color("#{padding}#{location}", :blue)
+          io.puts
+        end
+      end
+
+      def format_duration(duration_in_seconds)
+        duration_ns = duration_in_seconds * 1_000_000_000
+
+        number, unit = if duration_ns < 1000
+                         [duration_ns, "ns"]
+                       elsif duration_ns < 1_000_000
+                         [duration_ns / 1000, "μs"]
+                       elsif duration_ns < 1_000_000_000
+                         [duration_ns / 1_000_000, "ms"]
+                       else
+                         [duration_ns / 1_000_000_000, "s"]
+                       end
+
+        number =
+          format("%.2f", number).gsub(/0+$/, "").delete_suffix(".")
+
+        "#{number}#{unit}"
       end
 
       private def statistics
@@ -169,7 +195,6 @@ module Minitest
 
         message = "Reason: #{result.failure.message}"
         output << "\n" << indent(color(message, :yellow))
-
         output << "\n" << indent(color(location, :yellow))
 
         io.print output.join
@@ -225,12 +250,6 @@ module Minitest
                 .select {|line| line.start_with?(Dir.pwd) }
       end
 
-      private def result_name(name)
-        name
-          .gsub(/^test(_\d+)?_/, "")
-          .tr("_", " ")
-      end
-
       private def print_result_code(result_code)
         result_code = color(result_code, COLOR_FOR_RESULT_CODE[result_code])
         io.print result_code
@@ -266,12 +285,18 @@ module Minitest
         Rails.version >= "5.0.0"
       end
 
+      def bundler
+        "bundle exec " if ENV.key?("BUNDLE_BIN_PATH")
+      end
+
       private def build_test_command(test, result)
         location, line = test[:source_location]
 
-        if ENV["MINITEST_TEST_COMMAND"]
+        if ENV["MT_TEST_COMMAND"]
+          cmd = ENV["MT_TEST_COMMAND"]
+
           return format(
-            ENV["MINITEST_TEST_COMMAND"],
+            cmd,
             location: location,
             line: line,
             description: test[:description],
@@ -282,8 +307,7 @@ module Minitest
         if running_rails?
           %[bin/rails test #{location}:#{line}]
         else
-          bundle = "bundle exec " if defined?(Bundler)
-          %[#{bundle}rake TEST=#{location} TESTOPTS="--name=#{result.name}"]
+          %[#{bundler}rake TEST=#{location} TESTOPTS="--name=#{result.name}"]
         end
       end
     end

@@ -2,9 +2,7 @@
 
 require "test_helper"
 
-class MinitestUtilsTest < Minitest::Test
-  setup { ENV.delete("SLOW_TESTS") }
-
+class MinitestUtilsTest < Test
   def capture_exception
     yield
   rescue Exception => error # rubocop:disable Lint/RescueException
@@ -32,6 +30,10 @@ class MinitestUtilsTest < Minitest::Test
   test "raises exception for duplicated method name" do
     assert_raises(RuntimeError) do
       Class.new(Minitest::Test) do
+        def self.name
+          "Sample#{object_id}Test"
+        end
+
         test "some test"
         test "some test"
       end
@@ -40,6 +42,10 @@ class MinitestUtilsTest < Minitest::Test
 
   test "defines test with weird names" do
     test_case = Class.new(Minitest::Test) do
+      def self.name
+        "Sample#{object_id}Test"
+      end
+
       test("with parens (nice)") { assert true }
       test("with brackets [nice]") { assert true }
       test("with   multiple   spaces") { assert true }
@@ -56,6 +62,10 @@ class MinitestUtilsTest < Minitest::Test
 
   test "flunks method without block" do
     test_case = Class.new(Minitest::Test) do
+      def self.name
+        "Sample#{object_id}Test"
+      end
+
       test "flunk test"
     end
 
@@ -80,10 +90,14 @@ class MinitestUtilsTest < Minitest::Test
   end
 
   test "runs slow test" do
-    ENV["SLOW_TESTS"] = "true"
+    ENV["MT_RUN_SLOW_TESTS"] = "true"
     ran = false
 
     test_case = Class.new(Minitest::Test) do
+      def self.name
+        "Sample#{object_id}Test"
+      end
+
       test "slow test" do
         slow_test
         ran = true
@@ -99,6 +113,10 @@ class MinitestUtilsTest < Minitest::Test
     setups = []
 
     test_case = Class.new(Minitest::Test) do
+      def self.name
+        "Sample#{object_id}Test"
+      end
+
       setup { setups << 1 }
       setup { setups << 2 }
       setup { setups << 3 }
@@ -115,6 +133,10 @@ class MinitestUtilsTest < Minitest::Test
     teardowns = []
 
     test_case = Class.new(Minitest::Test) do
+      def self.name
+        "Sample#{object_id}Test"
+      end
+
       teardown { teardowns << 1 }
       teardown { teardowns << 2 }
       teardown { teardowns << 3 }
