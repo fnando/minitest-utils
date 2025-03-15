@@ -3,12 +3,11 @@
 module Minitest
   module Utils
     require "minitest"
-    require "benchmark"
     require "pathname"
-    require "minitest/utils/version"
-    require "minitest/utils/reporter"
-    require "minitest/utils/extension"
-    require "minitest/utils/test_notifier_reporter"
+    require_relative "utils/version"
+    require_relative "utils/reporter"
+    require_relative "utils/extension"
+    require_relative "utils/test_notifier_reporter"
 
     load_lib = lambda do |path, &block|
       require path
@@ -23,21 +22,21 @@ module Minitest
     load_lib.call "capybara"
 
     load_lib.call "webmock" do
-      require "minitest/utils/setup/webmock"
+      require_relative "utils/setup/webmock"
     end
 
     load_lib.call "database_cleaner" do
-      require "minitest/utils/setup/database_cleaner"
+      require_relative "utils/setup/database_cleaner"
     end
 
     load_lib.call "factory_girl" do
-      require "minitest/utils/setup/factory_girl"
+      require_relative "utils/setup/factory_girl"
     end
 
     load_lib.call "factory_bot" do
-      require "minitest/utils/setup/factory_bot"
+      require_relative "utils/setup/factory_bot"
     end
 
-    require "minitest/utils/railtie" if defined?(Rails)
+    require_relative "utils/railtie" if defined?(Rails)
   end
 end

@@ -22,14 +22,6 @@ jobs:
         ruby: ["3.4", "3.3"]
         gemfile:
           - Gemfile
-    services:
-      redis:
-        image: redis
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout
-          5s --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
@@ -59,4 +51,4 @@ jobs:
         env:
           BUNDLE_GEMFILE: ${{ matrix.gemfile }}
         run: |
-          bundle exec rake
+          exe/mt

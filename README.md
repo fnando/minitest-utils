@@ -62,16 +62,38 @@ end
 ```
 
 If you want to skip slow tests, you can use the `slow_test` method, which only
-runs the test when `SLOW_TESTS` environment variable is set.
+runs the test when `MT_RUN_SLOW_TESTS` environment variable is set.
 
 ```ruby
 # Only run slow tests in CI. You can bypass it locally by using
-# something like `SLOW_TESTS=1 rake`.
-ENV["SLOW_TESTS"] ||= ENV["CI"]
+# something like `MT_RUN_SLOW_TESTS=1 rake`.
+ENV["MT_RUN_SLOW_TESTS"] ||= ENV["CI"]
 
 class SampleTest < Minitest::Test
   test "useless test" do
     slow_test
+    sleep 1
+    assert true
+  end
+end
+```
+
+You can change the default threshold by setting `Minitest::Test.slow_threshold`.
+The default value is `0.1` (100ms).
+
+```ruby
+Minitest::Test.slow_threshold = 0.1
+```
+
+This config can also be changed per class:
+
+```ruby
+class SampleTest < Minitest::Test
+  self.slow_threshold = 0.1
+
+  test "useless test" do
+    slow_test
+    sleep 1
     assert true
   end
 end
@@ -87,6 +109,43 @@ class SampleTest < Minitest::Test
     assert_equal "secret", token
   end
 end
+```
+
+## Running tests
+
+`minitest-utils` comes with a runner: `mt`.
+
+You can run specific files by using `file:number`.
+
+```console
+$ mt test/models/user_test.rb:42
+```
+
+You can also run files by the test name (caveat: you need to underscore the
+name):
+
+```console
+$ mt test/models/user_test.rb --name /validations/
+```
+
+You can also run specific directories:
+
+```console
+$ mt test/models
+```
+
+To exclude tests by name, use --exclude:
+
+```console
+$ mt test/models --exclude /validations/
+```
+
+It supports `.minitestignore`, which only matches file names partially. Comments
+starting with `#` are ignored.
+
+```
+# Ignore all tests in test/fixtures
+test/fixtures
 ```
 
 ## Screenshots

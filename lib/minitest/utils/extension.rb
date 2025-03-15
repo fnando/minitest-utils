@@ -23,7 +23,9 @@ module Minitest
     end
 
     def slow_test
-      skip "slow test" unless ENV["SLOW_TESTS"]
+      return if ENV["MT_RUN_SLOW_TESTS"] || Minitest.options[:slow]
+
+      skip "slow test"
     end
 
     def self.test_method_name(description)
@@ -52,12 +54,19 @@ module Minitest
         description:,
         name: test_name,
         source_location:,
-        benchmark: nil
+        time: nil,
+        slow_threshold:
       }
 
       testable = proc do
-        benchmark = Benchmark.measure { instance_eval(&block) }
-        Test.tests["#{klass}##{test_name}"][:benchmark] = benchmark
+        err = nil
+        t0 = Minitest.clock_time
+        instance_eval(&block)
+      rescue StandardError => error
+        err = error
+      ensure
+        Test.tests["#{klass}##{test_name}"][:time] = Minitest.clock_time - t0
+        raise err if err
       end
 
       raise "#{test_name} is already defined in #{self}" if defined
