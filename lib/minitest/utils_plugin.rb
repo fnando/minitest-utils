@@ -4,17 +4,15 @@ require_relative "utils/reporter"
 require_relative "utils/test_notifier_reporter"
 
 module Minitest
-  class << self
-    attr_accessor :options
-  end
-
-  self.options = {}
-
   def self.plugin_utils_options(opts, options)
     Minitest.options = options
 
     opts.on("--slow", "Run slow tests") do
       options[:slow] = true
+    end
+
+    opts.on("--no-color", "Disable colored output") do
+      options[:no_color] = true
     end
 
     opts.on("--hide-slow", "Hide list of slow tests") do

@@ -25,17 +25,9 @@ module Minitest
         "S" => :yellow
       }.freeze
 
-      COLOR = {
-        red: 31,
-        green: 32,
-        yellow: 33,
-        blue: 34,
-        gray: 37
-      }.freeze
-
       def initialize(*)
         super
-        @color_enabled = io.respond_to?(:tty?) && io.tty?
+        @tty = io.respond_to?(:tty?) && io.tty?
       end
 
       def start
@@ -46,6 +38,14 @@ module Minitest
       def record(result)
         super
         print_result_code(result.result_code)
+      end
+
+      def color(string, color = :default)
+        if @tty
+          Utils.color(string, color)
+        else
+          string
+        end
       end
 
       def report
@@ -118,7 +118,8 @@ module Minitest
           prefix = "#{index + 1}) "
           padding = " " * prefix.size
 
-          io.puts color("#{prefix}#{info[:description]} (#{duration})", :red)
+          io.puts color("#{prefix}#{info[:description]} (#{duration})",
+                        :red)
           io.puts color("#{padding}#{location}", :blue)
           io.puts
         end
@@ -256,21 +257,9 @@ module Minitest
       end
 
       private def print_result_code(result_code)
-        result_code = color(result_code, COLOR_FOR_RESULT_CODE[result_code])
+        result_code = color(result_code,
+                            COLOR_FOR_RESULT_CODE[result_code])
         io.print result_code
-      end
-
-      private def color(string, color = :default)
-        if color_enabled?
-          color = COLOR.fetch(color, 0)
-          "\e[#{color}m#{string}\e[0m"
-        else
-          string
-        end
-      end
-
-      private def color_enabled?
-        @color_enabled
       end
 
       private def pluralize(word, count)

@@ -28,14 +28,6 @@ module Minitest
         OptionParser.new do |parser|
           parser.banner = ""
 
-          parser.on_tail("-h", "--help", "Show this message") do
-            matches = parser.to_a.map do |line|
-              line.match(MATCHER).named_captures.transform_keys(&:to_sym)
-            end
-            print_help(matches)
-            exit
-          end
-
           parser.on("-n", "--name=NAME",
                     "Run tests that match this name") do |v|
             options[:name] = v
@@ -58,12 +50,24 @@ module Minitest
             options[:slow_threshold] = v.to_f
           end
 
+          parser.on("--no-color", "Disable colored output.") do
+            options[:no_color] = true
+          end
+
           parser.on(
             "-e",
             "--exclude=PATTERN",
             "Exclude /regexp/ or string from run."
           ) do |v|
             options[:exclude] = v
+          end
+
+          parser.on_tail("-h", "--help", "Show this message") do
+            matches = parser.to_a.map do |line|
+              line.match(MATCHER).named_captures.transform_keys(&:to_sym)
+            end
+            print_help(matches)
+            exit
           end
         end.parse!(@args)
 
@@ -120,6 +124,7 @@ module Minitest
         args += ["--slow", options[:slow]] if options[:slow]
         args += ["--name", "/#{only.join('|')}/"] unless only.empty?
         args += ["--hide-slow"] if options[:hide_slow]
+        args += ["--no-color"] if options[:no_color]
 
         if options[:slow_threshold]
           threshold = options[:slow_threshold].to_s
@@ -229,20 +234,11 @@ module Minitest
         $ mt test/models --exclude /validations/
       TEXT
 
-      COLOR = {
-        red: 31,
-        green: 32,
-        yellow: 33,
-        blue: 34,
-        gray: 37
-      }.freeze
-
       private def color(string, color = :default)
         return string if string.empty?
 
-        if $stdout.tty?
-          color = COLOR.fetch(color, 0)
-          "\e[#{color}m#{string}\e[0m"
+        if $stdout.tty? && !options[:no_color] && !ARGV.include?("--no-color")
+          Utils.color(string, color)
         else
           string
         end
