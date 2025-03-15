@@ -38,6 +38,11 @@ module Minitest
         @color_enabled = io.respond_to?(:tty?) && io.tty?
       end
 
+      def start
+        super
+        io.puts "Run options: #{options[:args]}\n"
+      end
+
       def record(result)
         super
         print_result_code(result.result_code)
