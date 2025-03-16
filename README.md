@@ -155,7 +155,7 @@ starting with `#` are ignored.
 test/fixtures
 ```
 
-> ![NOTE]
+> [!NOTE]
 >
 > This command is also available as the long form `minitest`, for linux users.
 > Linux has a `mt` command for managing magnetic tapes.
