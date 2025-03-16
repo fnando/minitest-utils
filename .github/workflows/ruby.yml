@@ -51,5 +51,4 @@ jobs:
         env:
           BUNDLE_GEMFILE: ${{ matrix.gemfile }}
         run: |
-          bundle exec exe/mt
-          bundle exec rubocop
+          bundle exec rake

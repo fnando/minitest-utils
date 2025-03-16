@@ -54,6 +54,10 @@ module Minitest
             options[:no_color] = true
           end
 
+          parser.on("--watch", "Watch for changes, and re-run tests.") do
+            options[:watch] = true
+          end
+
           parser.on(
             "-e",
             "--exclude=PATTERN",
@@ -113,8 +117,63 @@ module Minitest
           "#{bundler}mt %{location}:%{line} #{color('# %{description}', :blue)}"
 
         ARGV.clear
-        ARGV.push(*minitest_args)
-        Minitest.autorun
+        ARGV.push(*to_shell(minitest_options))
+
+        if options[:watch]
+          gem "listen"
+          require "listen"
+          pid = nil
+
+          listen =
+            Listen.to(Dir.pwd, only: /(\.rb|Gemfile\.lock)$/) do |*changed, _|
+              next if pid
+
+              $stdout.clear_screen
+
+              # Make a list of test files that have been changed.
+              changed = changed.flatten.filter_map do |file|
+                if file.end_with?("_test.rb")
+                  Pathname(file).relative_path_from(Dir.pwd).to_s
+                end
+              end
+
+              options = minitest_options
+                        .slice(:slow, :hide_slow, :no_color, :slow_threshold)
+
+              # Load the list of failures from the last run.
+              failures = JSON.load_file(".minitestfailures") rescue [] # rubocop:disable Style/RescueModifier
+              options[:name] = "/^#{failures.join('|')}$/" if failures.any?
+
+              # If there are no failures, run the changed files.
+              changed = [] if failures.any?
+
+              pid = Process.spawn(
+                $PROGRAM_NAME,
+                *to_shell(options),
+                *changed,
+                chdir: Dir.pwd
+              )
+              Process.wait(pid)
+              pid = nil
+            end
+        end
+
+        if options[:watch]
+          pid = Process.spawn(
+            $PROGRAM_NAME,
+            *to_shell(minitest_options),
+            chdir: Dir.pwd
+          )
+          Process.wait(pid)
+          pid = nil
+          listen.start
+          sleep
+        else
+          Minitest.autorun
+        end
+      rescue Interrupt
+        Process.kill("INT", pid) if pid
+        puts "Exiting..."
       end
 
       def minitest_args
@@ -133,6 +192,33 @@ module Minitest
         end
 
         args.map(&:to_s)
+      end
+
+      def to_shell(args)
+        args
+          .transform_keys {|key| "--#{key.to_s.tr('_', '-')}" }
+          .to_a
+          .flatten
+          .reject { _1&.is_a?(TrueClass) }
+          .map(&:to_s)
+      end
+
+      def minitest_options
+        args = {}
+        args[:seed] = options[:seed]
+        args[:exclude] = options[:exclude] if options[:exclude]
+        args[:slow] = options[:slow] if options[:slow]
+        args[:name] = "/#{only.join('|')}/" unless only.empty?
+        args[:hide_slow] = options[:hide_slow] if options[:hide_slow]
+        args[:no_color] = options[:no_color] if options[:no_color]
+
+        if options[:slow_threshold]
+          threshold = options[:slow_threshold].to_s
+          threshold = threshold.gsub(/\.0+$/, "").delete_suffix(".")
+          args[:slow_threshold] = threshold
+        end
+
+        args
       end
 
       def files
@@ -209,9 +295,11 @@ module Minitest
       end
 
       def options
-        @options ||= {
-          seed: (ENV["SEED"] || srand).to_i % 0xFFFF
-        }
+        @options ||= {seed: new_seed}
+      end
+
+      def new_seed
+        (ENV["SEED"] || srand).to_i % 0xFFFF
       end
 
       BANNER = <<~TEXT

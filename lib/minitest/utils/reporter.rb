@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "json"
+
 module Minitest
   class Test
     class << self
@@ -50,17 +52,20 @@ module Minitest
 
       def report
         super
-        io.sync = true if io.respond_to?(:sync)
+        io.sync = true if io.respond_to?(:sync=)
 
-        failing_results = results.reject(&:skipped?)
+        failing_results = results.reject(&:passed?).reject(&:skipped?)
         skipped_results = results.select(&:skipped?)
+
+        write_failures_json(failing_results)
+        print_failing_results(failing_results)
+        if failing_results.empty?
+          print_skipped_results(skipped_results, failing_results.size)
+        end
 
         color = :green
         color = :yellow if skipped_results.any?
         color = :red if failing_results.any?
-
-        print_failing_results(failing_results)
-        print_skipped_results(skipped_results, failing_results.size)
 
         io.print "\n\n"
         io.puts statistics
@@ -73,6 +78,17 @@ module Minitest
         else
           print_slow_results
         end
+      end
+
+      def write_failures_json(results)
+        tests = results.each_with_object([]) do |result, buffer|
+          buffer << find_test_info(result)[:id]
+        end
+
+        File.write(
+          File.join(Dir.pwd, ".minitestfailures"),
+          JSON.dump(tests)
+        )
       end
 
       def slow_threshold_for(test_case)

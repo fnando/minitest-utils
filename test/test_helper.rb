@@ -7,6 +7,7 @@ end
 
 require "bundler/setup"
 require "minitest/utils"
+require "minitest/autorun" unless ENV["MT_RUNNER"]
 
 class Test < Minitest::Test
   setup { ENV.delete("MT_RUN_SLOW_TESTS") }

@@ -1,6 +1,4 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative "../lib/minitest/utils/cli"
-Minitest::Utils::CLI.loaded_via_bundle_exec = ENV.key?("BUNDLER_VERSION")
-Minitest::Utils::CLI.new(ARGV.dup).start
+load File.join(__dir__, "minitest")

@@ -148,8 +148,4 @@ class MinitestUtilsTest < Test
 
     assert_equal [1, 2, 3], teardowns
   end
-
-  test "fails" do
-    assert false
-  end
 end

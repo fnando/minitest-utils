@@ -113,7 +113,14 @@ end
 
 ## Running tests
 
-`minitest-utils` comes with a runner: `mt`.
+`minitest-utils` comes with a runner: `mt` or `minitest`.
+
+> [!WARNING]
+>
+> When using this test runner, you must change your test helper and replace
+> `require "minitest/autorun"` with
+> `require "minitest/autorun" unless ENV["MT_RUNNER"]`. This way you can use
+> both the runner and rake.
 
 You can run specific files by using `file:number`.
 
