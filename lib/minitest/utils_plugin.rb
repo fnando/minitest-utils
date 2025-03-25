@@ -11,6 +11,10 @@ module Minitest
       options[:slow] = true
     end
 
+    opts.on("--backtrace", "Show full backtrace") do
+      options[:backtrace] = true
+    end
+
     opts.on("--no-color", "Disable colored output") do
       options[:no_color] = true
     end

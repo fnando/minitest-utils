@@ -239,9 +239,11 @@ module Minitest
       end
 
       private def backtrace(backtrace)
-        backtrace = filter_backtrace(backtrace).map do |line|
-          location(line, true)
+        unless Minitest.options[:backtrace]
+          backtrace = filter_backtrace(backtrace)
         end
+
+        backtrace = backtrace.map {|line| location(line, true) }
 
         return if backtrace.empty?
 
