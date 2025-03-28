@@ -17,7 +17,7 @@ module Minitest
   module Utils
     class Reporter < Minitest::StatisticsReporter
       def self.filters
-        @filters ||= []
+        @filters ||= [%r{/vendor/}]
       end
 
       COLOR_FOR_RESULT_CODE = {
