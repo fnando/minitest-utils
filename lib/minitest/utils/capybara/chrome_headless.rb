@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 gem "selenium-webdriver"
-gem "chromedriver-helper"
+gem "webdrivers"
 
 Capybara.register_driver :chrome do |app|
   options = Selenium::WebDriver::Chrome::Options.new(
