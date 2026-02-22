@@ -16,7 +16,7 @@ class ReporterTest < Test
   def run_test_case(test_case)
     reporter = Minitest::Utils::Reporter.new(StringIO.new)
     reporter.start
-    test_case.run(reporter)
+    test_case.run_suite(reporter)
     reporter.report
 
     Minitest::Runnable

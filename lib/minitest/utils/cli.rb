@@ -374,7 +374,7 @@ module Minitest
         io << "\n"
 
         matches.each do |match|
-          match => { short:, long:, description: }
+          match => {short:, long:, description:}
 
           io << "  "
           io << (" " * (short_size - short.to_s.size))

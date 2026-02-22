@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "utils/reporter"
-require_relative "utils/test_notifier_reporter"
 
 module Minitest
   def self.plugin_utils_options(opts, options)
@@ -36,10 +35,6 @@ module Minitest
 
     begin
       require "test_notifier"
-      reporters << Minitest::Utils::TestNotifierReporter.new(
-        options[:io],
-        options
-      )
     rescue LoadError
       # noop
     end

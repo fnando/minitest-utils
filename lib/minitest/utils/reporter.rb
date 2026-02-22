@@ -115,7 +115,7 @@ module Minitest
         results
           .each
           .with_index(initial_index + 1) do |result, index|
-          display_skipped(result, index)
+            display_skipped(result, index)
         end
       end
 
@@ -293,8 +293,8 @@ module Minitest
 
       private def running_rails?
         defined?(Rails) &&
-        Rails.respond_to?(:version) &&
-        Rails.version >= "5.0.0"
+          Rails.respond_to?(:version) &&
+          Rails.version >= "5.0.0"
       end
 
       def bundler
