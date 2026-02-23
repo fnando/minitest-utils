@@ -12,6 +12,42 @@ module Minitest
         message ||= "expected: falsy value\ngot: #{mu_pp(test)}"
         super
       end
+
+      def diff(expected, actual)
+        expected = mu_pp_for_diff(expected)
+        actual   = mu_pp_for_diff(actual)
+
+        a = expected.scan(/\w+|\W+/)
+        b = actual.scan(/\w+|\W+/)
+
+        exp_out = +""
+        act_out = +""
+
+        Diff::LCS
+          .sdiff(a, b)
+          .chunk_while {|a, b| a.action == b.action }
+          .each do |group|
+            action  = group.first.action
+            old_str = group.filter_map(&:old_element).join
+            new_str = group.filter_map(&:new_element).join
+
+            case action
+            when "="
+              exp_out << old_str
+              act_out << new_str
+            when "-"
+              exp_out << Utils.color(old_str, :red, bgcolor: :red)
+            when "+"
+              act_out << Utils.color(new_str, :green, bgcolor: :green)
+            when "!"
+              exp_out << Utils.color(old_str, :red, bgcolor: :red)
+              act_out << Utils.color(new_str, :green, bgcolor: :green)
+            end
+          end
+
+        "#{Utils.color('expected: ', :red)} #{exp_out}\n" \
+          "#{Utils.color('  actual: ', :red)} #{act_out}"
+      end
     end
   end
 

@@ -133,4 +133,64 @@ class ReporterTest < Test
     assert_equal "100ns", reporter.format_duration(0.0000001)
     assert_equal "150ns", reporter.format_duration(0.00000015)
   end
+
+  test "does better string diffing" do
+    test_case = build_test_case do
+      test "diffs strings" do
+        expected = "the quick brown fox jumps over the lazy dog"
+        actual   = "the quick red fox jumps over the lazy cat"
+
+        assert_equal expected, actual
+      end
+    end
+    out = run_test_case(test_case)
+
+    assert_includes out,
+                    "\e[31mexpected: \e[0m \"the quick \e[31;41mbrown" \
+                    "\e[0m fox jumps over the lazy \e[31;41mdog\e[0m\""
+    assert_includes out,
+                    "\e[31m  actual: \e[0m \"the quick \e[32;42mred" \
+                    "\e[0m fox jumps over the lazy \e[32;42mcat\e[0m\""
+  end
+
+  test "does better hash diffing" do
+    test_case = build_test_case do
+      test "diffs hashes" do
+        expected = {a: 1, b: 2, c: 3}
+        actual = {a: 1, b: 3, c: 2}
+
+        assert_equal expected, actual
+      end
+    end
+    out = run_test_case(test_case)
+
+    assert_includes out,
+                    "\e[31mexpected: " \
+                    "\e[0m {a: 1, b: \e[31;41m2\e[0m, c: \e[31;41m3\e[0m}"
+    assert_includes out,
+                    "\e[31m  actual: " \
+                    "\e[0m {a: 1, b: \e[32;42m3\e[0m, c: \e[32;42m2\e[0m}"
+  end
+
+  test "does better object diffing" do
+    test_case = build_test_case do
+      test "diffs objects" do
+        klass = Struct.new(:name, :email)
+        expected = klass.new("John", "john@example.com")
+        actual = klass.new("Jane", "jane@example.com")
+
+        assert_equal expected, actual
+      end
+    end
+    out = run_test_case(test_case)
+
+    assert_includes out,
+                    "\e[31mexpected: \e[0m " \
+                    "#<struct name=\"\e[31;41mJohn\e[0m\", " \
+                    "email=\"\e[31;41mjohn\e[0m@example.com\">"
+    assert_includes out,
+                    "\e[31m  actual: \e[0m " \
+                    "#<struct name=\"\e[32;42mJane\e[0m\", " \
+                    "email=\"\e[32;42mjane\e[0m@example.com\">"
+  end
 end

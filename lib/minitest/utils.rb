@@ -10,25 +10,22 @@ module Minitest
   module Utils
     require "minitest"
     require "pathname"
+    require "diff/lcs"
     require_relative "utils/version"
     require_relative "utils/reporter"
     require_relative "utils/extension"
 
-    COLOR = {
-      red: 31,
-      green: 32,
-      yellow: 33,
-      blue: 34,
-      gray: 37
-    }.freeze
+    COLOR = {red: 31, green: 32, yellow: 33, blue: 34, gray: 37}.freeze
+    BGCOLOR = {red: 41, green: 42, yellow: 43, blue: 44, gray: 47}.freeze
 
-    def self.color(string, color = :default)
-      if color_enabled?
-        color = COLOR.fetch(color, 0)
-        "\e[#{color}m#{string}\e[0m"
-      else
-        string
-      end
+    def self.color(string, color = :default, bgcolor: nil)
+      return string unless color_enabled?
+
+      fg = COLOR.fetch(color, 0)
+      bg = BGCOLOR.fetch(bgcolor, nil)
+
+      code = [fg, bg].compact.join(";")
+      "\e[#{code}m#{string}\e[0m"
     end
 
     def self.color_enabled?
