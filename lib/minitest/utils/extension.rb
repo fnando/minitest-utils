@@ -37,6 +37,37 @@ module Minitest
       :"test_#{method_name}"
     end
 
+    # This hook handles methods defined directly with `def test_`.
+    def self.method_added(method_name)
+      super
+
+      test_name = method_name.to_s
+
+      return unless test_name.start_with?("test_")
+
+      klass = name
+      id = "#{klass}##{method_name}"
+      description = method_name.to_s.delete_prefix("test_").tr("_", " ")
+
+      return if Test.tests[id]
+
+      file_path, lineno = instance_method(method_name).source_location
+
+      source_location = [
+        Pathname(file_path).relative_path_from(Pathname(Dir.pwd)),
+        lineno
+      ]
+
+      Test.tests[id] = {
+        id:,
+        description:,
+        name: test_name,
+        source_location:,
+        time: nil,
+        slow_threshold:
+      }
+    end
+
     def self.test(description, &block)
       source_location = caller_locations(1..1).first
       source_location = [
